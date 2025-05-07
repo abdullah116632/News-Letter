@@ -1,28 +1,48 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans, Roboto } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
+});
+
+const centuryGothic = localFont({
+  src: "../fonts/CenturyGothic.ttf",
+  variable: "--font-gothic",
+});
+
+const codeProBlackLC = localFont({
+  src: "../fonts/Code Pro Black LC.otf",
+  variable: "--font-code-pro-black-lc",
 });
 
 export const metadata = {
+  viewport: 'width=device-width, initial-scale=1.0',
   title: "Opt.national",
   description: "A newslatter service platform",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="overflow-x-hidden">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${dmSans.variable} ${roboto.variable} ${centuryGothic.variable} ${codeProBlackLC.variable} antialiased overflow-x-hidden`}
       >
+        <header>
+          <Navbar />
+        </header>
         {children}
+        <footer>
+          <Footer />
+        </footer>
       </body>
     </html>
   );

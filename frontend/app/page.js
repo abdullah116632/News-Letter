@@ -1,9 +1,19 @@
-import Image from "next/image";
+import Blogs from "@/components/Blogs";
+import HomePage from "@/components/HomePage";
+import MissionAndServices from "@/components/MissionAndServices";
+import Pricing from "@/components/Pricing";
+import SubscribersComments from "@/components/SubscribersComments";
+import Test from "@/components/Test"
 
 export default function Home() {
   return (
-    <div className="">
-      <h1 className="w-full h-5 bg-amber-800">Project setup</h1>
-    </div>
+      <main>
+        <HomePage />
+        <MissionAndServices />
+        <Pricing />
+        <SubscribersComments />
+        <Blogs />
+        {/* <Test /> */}
+      </main>
   );
 }

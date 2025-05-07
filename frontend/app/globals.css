@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050A2A;
+  --foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-dmSans: var(--font-dm-sans);
+  --font-roboto: var(--font-roboto);
+  --font-centuryGothic: var(--font-gothic);
+  --font-codeProBlackLC: var(--font-code-pro-black-lc);
+
+  --breakpoint-xs: 391px;
+  --breakpoint-xxs:361px;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-gothic);
 }
+
+.text-border {
+  -webkit-text-stroke: 0.0000001px #E34DD4; /* Set thickness and color */
+}
+
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.custom-swiper-pagination .swiper-pagination-bullet {
+  width: 15px;
+  height: 15px;
+  background-color: #FFF4F4;
+  opacity: 0.5;
+  filter: blur(2px);
+}
+
+.custom-swiper-pagination .swiper-pagination-bullet-active {
+  opacity: 1;
+  filter: blur(0px);
+}
+
+/* @property --angle{
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+} */
+
+.card::after, .card::before {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-image: conic-gradient( #ff4545, #00ff99, #006aff, #ff0095);
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+  padding: 3px;
+  border-radius: 10px;
+  /* animation: 3s spin linear infinite; */
+}
+.card::before {
+  filter: blur(1.5rem);
+  opacity: 0.5;
+}
+/* @keyframes spin {
+  from{
+    --angle: 0deg;
+  }to{
+    --angle: 360deg;
+  }
+} */
+
+
+/* body::before {
+  content: "";
+  position: absolute;
+  top: -130px;
+  left: -130px;
+  width: 300px;
+  height: 300px;
+  background-color: #6076A1;
+  border-radius: 50%;
+  opacity: 0.5;
+  filter: blur(30px);
+  z-index: 0;
+} */
+
