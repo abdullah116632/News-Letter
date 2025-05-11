@@ -1,6 +1,6 @@
 import { blogs } from "@/data/blogs";
 import BlogSlider from "./BlogSlider";
-
+import Link from "next/link";
 
 const Blogs = () => {
   return (
@@ -14,9 +14,11 @@ const Blogs = () => {
           <h5 className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF00FB] to-[#FFAE00] w-fit lg:h-[1.2em] text-sm sm:text-xl md:text-3xl lg:text-5xl font-bold">
             Our Blogs: Your Guide to Growth
           </h5>
-          <button className="text-[#FF0000] border-2 border-[#FF0000] h-8 sm:h-12 rounded-3xl text-sm lg:text-2xl bg-gradient-to-r from-[#FFFFFF] to-[#999999] font-dmSans font-bold px-2 sm:px-4 cursor-pointer">
-            View All
-          </button>
+          <Link href="/blogs">
+            <button className="text-[#FF0000] border-2 border-[#FF0000] h-8 sm:h-12 rounded-3xl text-sm lg:text-2xl bg-gradient-to-r from-[#FFFFFF] to-[#999999] font-dmSans font-bold px-2 sm:px-4 cursor-pointer">
+              View All
+            </button>
+          </Link>
         </div>
         <div className="px-6 md:px-3 lg:px-10 xl:px-20">
           <BlogSlider blogs={blogs} />
@@ -27,4 +29,3 @@ const Blogs = () => {
 };
 
 export default Blogs;
-

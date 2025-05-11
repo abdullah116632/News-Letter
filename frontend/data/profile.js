@@ -1,0 +1,21 @@
+export const profileData = {
+    img: "/images/profile.png",
+    fullName: "Arnab Samadder",
+    profession: "Agriculturist | Paper Writer | Designer",
+    occupation: "student",
+    email: "Email: arnab.prof.work@gmail.com",
+    activePackage: "opt. all access",
+    startingDate: "4 november 2024",
+    endingDate : "12 December 2024",
+    paymentMethod : "Bkash",
+    institution : "Patuakhali Science and Technology Univesity Patuakhali Science and Technology Univesity",
+    fieldOfStudy : "Agriculture",
+    interest : "Designing",
+    priorResearchExperience : "Yes",
+    englishProficiency : "Yes",
+    preferredDegree : "Post Graduation",
+    countrypreference : "USA",
+    internshipJobPreferences : "Remote",
+    preferredFieldsofOpportunity : "Soil Science, Environment, Public health, Agriculture, Soil Crop Nutrients",
+    skills: ""
+}

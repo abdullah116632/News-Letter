@@ -1,5 +1,6 @@
 import { comments } from "@/data/subscribersComments";
 import CommentSlider from "./CommentSlider";
+import Link from "next/link";
 
 const SubscribersComments = () => {
   return (
@@ -14,9 +15,11 @@ const SubscribersComments = () => {
           <h5 className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF00FB] to-[#FFAE00] w-fit xxs:text-xl sm:text-2xl md:text-4xl lg:text-6xl font-bold">
             What Our Subscribers Say
           </h5>
-          <button className="text-[#FF0000] border-2 border-[#FF0000] h-8 sm:h-12 rounded-3xl text-sm lg:text-2xl bg-gradient-to-r from-[#FFFFFF] to-[#999999] font-dmSans font-bold px-2 sm:px-4 cursor-pointer">
-            View All
-          </button>
+          <Link href="/comments">
+            <button className="text-[#FF0000] border-2 border-[#FF0000] h-8 sm:h-12 rounded-3xl text-sm lg:text-2xl bg-gradient-to-r from-[#FFFFFF] to-[#999999] font-dmSans font-bold px-2 sm:px-4 cursor-pointer">
+              View All
+            </button>
+          </Link>
         </div>
 
         {/* Comment slider: displays the list of subscriber comments */}

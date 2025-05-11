@@ -8,7 +8,7 @@ const BlurCircle = ({
     opacity = "opacity-50",
   }) => (
     <div
-      className={`absolute rounded-full blur-3xl z-0 ${height} ${width} ${top} ${left} ${color} ${opacity} ${className}`}
+      className={`absolute rounded-full blur-3xl -z-50 ${height} ${width} ${top} ${left} ${color} ${opacity} ${className}`}
     />
   );
   
