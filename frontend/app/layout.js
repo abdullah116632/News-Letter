@@ -1,8 +1,10 @@
+
 import { DM_Sans, Roboto } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ReduxProvider from "./providers";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -25,7 +27,7 @@ const codeProBlackLC = localFont({
 });
 
 export const metadata = {
-  viewport: 'width=device-width, initial-scale=1.0',
+  viewport: "width=device-width, initial-scale=1.0",
   title: "Opt.national",
   description: "A newslatter service platform",
 };
@@ -33,17 +35,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="overflow-x-hidden">
-      <body
-        className={`${dmSans.variable} ${roboto.variable} ${centuryGothic.variable} ${codeProBlackLC.variable} antialiased overflow-x-hidden`}
-      >
-        <header>
-          <Navbar />
-        </header>
-        {children}
-        <footer>
-          <Footer />
-        </footer>
-      </body>
+      <ReduxProvider>
+        <body
+          className={`${dmSans.variable} ${roboto.variable} ${centuryGothic.variable} ${codeProBlackLC.variable} antialiased overflow-x-hidden`}
+        >
+          <header>
+            <Navbar />
+          </header>
+          {children}
+          <footer>
+            <Footer />
+          </footer>
+        </body>
+      </ReduxProvider>
     </html>
   );
 }
