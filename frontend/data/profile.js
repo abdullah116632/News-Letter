@@ -1,5 +1,5 @@
 export const profileData = {
-    img: "/images/profile.png",
+    img: "/images/userprofile.png",
     fullName: "Arnab Samadder",
     profession: "Agriculturist | Paper Writer | Designer",
     occupation: "student",
