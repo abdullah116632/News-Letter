@@ -3,6 +3,7 @@ import CustomError from "../utils/customErrorClass.js";
 import cloudinary from "../db/cloudinaryConnection.js";
 import generateTokenAndSetToken from "../utils/generateToken.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
+import compareString from "../utils/conpareString.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -63,3 +64,59 @@ export const signup = async (req, res, next) => {
     next(err);
   }
 };
+
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate inputs
+    if (!email || !password) {
+      return next(new CustomError(400, "Email and password are required"));
+    }
+
+    // Check if user exists
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return next(new CustomError(401, "Invalid email or password"));
+    }
+
+    // Compare password
+    const isPasswordValid = await compareString(password, user.password);
+    if (!isPasswordValid) {
+      return next(new CustomError(401, "Invalid email or password"));
+    }
+
+    // Set JWT token in cookie
+    generateTokenAndSetToken(user._id, res);
+
+    // Prepare response
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: userResponse,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const logout = (req, res) => {
+
+  res.cookie("jwt", "", {
+  maxAge: 0,
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "Strict",
+});
+
+  res.status(200).json({
+    status: "success",
+    message: "Logged out successfully",
+    data: null,
+  });
+};
+
