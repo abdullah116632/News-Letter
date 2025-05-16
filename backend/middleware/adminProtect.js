@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import CustomError from "../utils/customErrorClass.js";
 
-export const adminProtect = async (req, res, next) => {
+const adminProtect = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
     if (!token) {
@@ -31,3 +31,5 @@ export const adminProtect = async (req, res, next) => {
     next(err);
   }
 };
+
+export default adminProtect;

@@ -7,7 +7,7 @@ import {
   getBlogById,
 } from "../controllers/blogController.js";
 import { upload } from "../middleware/fileUpload.js";
-import { adminProtect } from "../middleware/adminProtect.js";
+import adminProtect from "../middleware/adminProtect.js";
 
 const router = express.Router();
 

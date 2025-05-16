@@ -7,6 +7,7 @@ import globalErrorHandler from "./controllers/errorController.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 
 dotenv.config();
@@ -20,7 +21,8 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/blogs", blogRoutes);
+app.use("/api/blog", blogRoutes);
+app.use("/api/review", reviewRoutes);
 
 
 app.use((req, res, next) => {
