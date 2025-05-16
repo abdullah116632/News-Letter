@@ -5,7 +5,8 @@ import connectToMongoDB from "./db/mongoDbConnection.js";
 import CustomError from "./utils/customErrorClass.js";
 import globalErrorHandler from "./controllers/errorController.js";
 import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js"
+import userRoutes from "./routes/userRoutes.js";
+import blogRoutes from "./routes/blogRoutes.js";
 
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/blogs", blogRoutes);
 
 
 app.use((req, res, next) => {
