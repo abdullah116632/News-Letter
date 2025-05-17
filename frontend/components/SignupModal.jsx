@@ -1,10 +1,15 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { FaUserCircle } from "react-icons/fa";
-import { FaUser, FaUserPlus } from "react-icons/fa6";
+import { signupUser } from "@/redux/slices/userSlice";
+import { useState, useRef, useEffect } from "react";
+import { FaUserPlus } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const SignupModal = ({ onClose, onSwitchToLogin }) => {
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.user);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -14,10 +19,11 @@ const SignupModal = ({ onClose, onSwitchToLogin }) => {
     termsAccepted: false,
   });
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewFileUrl, setPreviewFileUrl] = useState(null);
+
   const [errors, setErrors] = useState({});
-  const [profileImage, setProfileImage] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef();
 
@@ -38,19 +44,16 @@ const SignupModal = ({ onClose, onSwitchToLogin }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-        if (submitted) validateField("profileImage", reader.result);
-      };
-      reader.readAsDataURL(file);
+      setSelectedFile(file);
+      setPreviewFileUrl(URL.createObjectURL(file));
+      if (submitted) validateField("profileImage", selectedFile);
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!profileImage) newErrors.profileImage = "Profile image is required.";
+    if (!selectedFile) newErrors.profileImage = "Profile image is required.";
     if (!formData.fullName.trim())
       newErrors.fullName = "Full name is required.";
     if (!formData.email.trim()) {
@@ -117,26 +120,32 @@ const SignupModal = ({ onClose, onSwitchToLogin }) => {
 
     if (!validateForm()) return;
 
-    setLoading(true);
+    // Create FormData object to send multipart/form-data
+    const data = new FormData();
+    data.append("fullName", formData.fullName);
+    data.append("email", formData.email);
+    data.append("package", formData.package);
+    data.append("password", formData.password);
+    data.append("confirmPassword", formData.confirmPassword);
+    data.append("img", selectedFile);
 
+    // Dispatch signup async thunk
     try {
-      console.log({ ...formData, profileImage }); // Simulate async request
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Fake delay
-
-      // You can add real submit logic here (e.g. API call)
-    } catch (error) {
-      console.error("Registration error:", error);
-    } finally {
-      setLoading(false);
+      await dispatch(signupUser(data)).unwrap();
+      toast.success("Signup successful!");
+      onClose();
+    } catch (err) {
+      toast.error(err || "Signup failed.");
     }
   };
 
-  const inputClass = (error) =>
-    `w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-      error
-        ? "border-red-500 focus:ring-red-400"
-        : "border-gray-300 focus:ring-purple-500"
-    }`;
+  useEffect(() => {
+    return () => {
+      if (previewFileUrl) {
+        URL.revokeObjectURL(previewFileUrl);
+      }
+    };
+  }, [previewFileUrl]);
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -159,9 +168,9 @@ const SignupModal = ({ onClose, onSwitchToLogin }) => {
             className="w-20 h-20 rounded-full bg-gray-200 cursor-pointer border-2 border-gray-400 overflow-hidden flex items-center justify-center"
             onClick={() => fileInputRef.current.click()}
           >
-            {profileImage ? (
+            {previewFileUrl ? (
               <img
-                src={profileImage}
+                src={previewFileUrl}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
@@ -231,6 +240,9 @@ const SignupModal = ({ onClose, onSwitchToLogin }) => {
                   : "border-gray-300 focus:ring-purple-500"
               }`}
             >
+              <option value="" disabled>
+                Select a package
+              </option>
               <option value="basic">Basic</option>
               <option value="premium">Premium</option>
               <option value="enterprise">Enterprise</option>

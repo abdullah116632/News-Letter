@@ -2,9 +2,10 @@
 import { DM_Sans, Roboto } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/Footer";
 import ReduxProvider from "./providers";
+import ToastProvider from "@/components/ToastProvider";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({ children }) {
         <body
           className={`${dmSans.variable} ${roboto.variable} ${centuryGothic.variable} ${codeProBlackLC.variable} antialiased overflow-x-hidden`}
         >
+          <ToastProvider />
           <header>
             <Navbar />
           </header>

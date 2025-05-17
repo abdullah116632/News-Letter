@@ -1,16 +1,7 @@
-// import { RiMenuUnfold3Line } from "react-icons/ri";
-// import { useDispatch, useSelector } from "react-redux";
-// import { openModal } from "../redux/modalSlice";
-// import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+
+import { RxCross2 } from "react-icons/rx";
 
 const SideMenu = ({ isMenuOpen, setIsMenuOpen }) => {
-
-//   const { user } = useSelector((state) => state.user);
-//   const dispatch = useDispatch()
-
-//   const navigate = useNavigate()
-// console.log(isMenuOpen)
 
 
   return (
@@ -26,7 +17,7 @@ const SideMenu = ({ isMenuOpen, setIsMenuOpen }) => {
           className="absolute top-5 right-4 text-2xl text-white"
           onClick={() => setIsMenuOpen(false)}
         >
-          <X />
+          <RxCross2 />
         </button>
 
         {/* Menu Items */}

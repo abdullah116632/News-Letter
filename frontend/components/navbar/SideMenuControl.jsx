@@ -1,14 +1,25 @@
 "use client";
 import { AlignJustify } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import SideMenu from "./SideMenu";
-import LoginModal from "./LoginModal";
-import SignupPage from "./SignupModal";
+import LoginModal from "../LoginModal";
+import SignupPage from "../SignupModal";
+import Image from "next/image";
 
 const SideMenuControl = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  const user = useSelector((state) => state.userData.user);
+  console.log(user)
+
+  const [mounted, setMounted] = useState(false);
+
+useEffect(() => {
+  setMounted(true);
+}, []);
 
   return (
     <>
@@ -20,6 +31,20 @@ const SideMenuControl = () => {
         >
           SUBSCRIBE
         </button>
+
+        {/* User Image Icon (only if logged in) */}
+        {user?.img && mounted && (
+          <div className="relative w-8 h-8 lg:w-10 lg:h-10 mt-1 rounded-full overflow-hidden cursor-pointer">
+            <Image
+              src={user?.img || "/images/default-profile.jpg"}
+              alt="User Profile"
+              fill
+              sizes="32px"
+              style={{ objectFit: "cover" }}
+              priority={true}
+            />
+          </div>
+        )}
 
         {/* Mobile Menu Button */}
         <AlignJustify

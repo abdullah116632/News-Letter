@@ -1,4 +1,4 @@
-import BlurCircle from "./helper/BlurCircle";
+import BlurCircle from "../helper/BlurCircle";
 import Image from "next/image";
 import SideMenuControl from "./SideMenuControl";
 import Link from "next/link";
