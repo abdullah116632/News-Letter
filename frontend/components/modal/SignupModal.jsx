@@ -1,5 +1,6 @@
 "use client";
 
+import { openModal } from "@/redux/slices/modalSlice";
 import { signupUser } from "@/redux/slices/userSlice";
 import { useState, useRef, useEffect } from "react";
 import { FaUserPlus } from "react-icons/fa6";
@@ -8,7 +9,7 @@ import { toast } from "react-toastify";
 
 const SignupModal = ({ onClose, onSwitchToLogin }) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.user);
+  const { loading } = useSelector((state) => state.userData);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -350,7 +351,7 @@ const SignupModal = ({ onClose, onSwitchToLogin }) => {
         <p className="text-sm text-center mt-4 text-gray-600">
           Have an account?{" "}
           <button
-            onClick={onSwitchToLogin}
+            onClick={() => dispatch(openModal({modalName: "login"}))}
             className="text-blue-600 hover:underline cursor-pointer"
           >
             Login here

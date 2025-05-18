@@ -1,8 +1,15 @@
 "use client";
 import { useState } from "react";
-import { X } from "lucide-react";
+import { RxCross2 } from "react-icons/rx";
+import { useDispatch, useSelector } from "react-redux";
+import { closeModal, openModal } from "@/redux/slices/modalSlice";
+import { loginUser } from "@/redux/slices/userSlice";
+import { toast } from "react-toastify";
 
-const LoginModal = ({ onClose, onSwitchToSignup, onForgotPassword }) => {
+const LoginModal = ({ onForgotPassword }) => {
+  const { loading } = useSelector((state) => state.userData);
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -10,7 +17,6 @@ const LoginModal = ({ onClose, onSwitchToSignup, onForgotPassword }) => {
 
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const validate = (data) => {
     const newErrors = {};
@@ -51,32 +57,30 @@ const LoginModal = ({ onClose, onSwitchToSignup, onForgotPassword }) => {
 
     if (Object.keys(validationErrors).length > 0) return;
 
-    setLoading(true);
-
     try {
-      console.log("Login Data Submitted:", formData);
-      await new Promise((res) => setTimeout(res, 1500)); // Simulated async
+      await dispatch(loginUser(formData)).unwrap();
+      toast.success("login successful!");
+      dispatch(closeModal())
     } catch (err) {
-      console.error("Login failed:", err);
-    } finally {
-      setLoading(false);
+      toast.error(err || "Login failed, try again later");
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-gradient-to-br from-white/90 via-blue-100 to-purple-100 border border-gray-200 w-full max-w-md mx-4 p-6 rounded-2xl relative text-black backdrop-blur shadow-lg">
-
         {/* Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-black cursor-pointer"
-          onClick={onClose}
+          onClick={() => dispatch(closeModal())}
         >
-          <X size={20} />
+          <RxCross2 size={20} />
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-center mb-6">Login to Your Account</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">
+          Login to Your Account
+        </h2>
 
         {/* Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -89,7 +93,9 @@ const LoginModal = ({ onClose, onSwitchToSignup, onForgotPassword }) => {
               onChange={handleChange}
               placeholder="Enter your email"
               className={`w-full border outline-1 px-3 py-2 rounded-md focus:outline-none focus:ring-2 ${
-                errors.email ? "border-red-500 focus:ring-red-400 outline-none" : "border-gray-300 focus:ring-purple-500"
+                errors.email
+                  ? "border-red-500 focus:ring-red-400 outline-none"
+                  : "border-gray-300 focus:ring-purple-500"
               }`}
             />
             {errors.email && (
@@ -106,7 +112,9 @@ const LoginModal = ({ onClose, onSwitchToSignup, onForgotPassword }) => {
               onChange={handleChange}
               placeholder="Enter your password"
               className={`w-full border outline px-3 py-2 rounded-md focus:outline-none focus:ring-2 ${
-                errors.password ? "border-red-500 focus:ring-red-400 outline-none" : "border-gray-300 focus:ring-purple-500"
+                errors.password
+                  ? "border-red-500 focus:ring-red-400 outline-none"
+                  : "border-gray-300 focus:ring-purple-500"
               }`}
             />
             {errors.password && (
@@ -155,7 +163,7 @@ const LoginModal = ({ onClose, onSwitchToSignup, onForgotPassword }) => {
             Don&apos;t have an account?{" "}
             <span
               className="text-purple-700 font-semibold cursor-pointer hover:underline"
-              onClick={onSwitchToSignup}
+              onClick={() => dispatch(openModal({ modalName: "signup" }))}
             >
               Signup here
             </span>

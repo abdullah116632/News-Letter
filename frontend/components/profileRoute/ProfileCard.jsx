@@ -5,6 +5,11 @@ import UpdatePopUpButton from "./UpdatePopUpButton";
 
 
 const profileCard = ({profileData}) => {
+
+  if (!profileData) {
+  return <div>Loading failed or no user data available.</div>;
+}
+
   
   return (
     <div className="relative bg-[#7C7C7C57] rounded-2xl shadow-xl p-6 md:p-10 flex flex-col md:flex-row justify-between items-center md:items-start gap-6 border-2 border-white/20">

@@ -1,17 +1,19 @@
 // src/features/user/userSlice.js
-import api from "@/lib/axios";
+import api from "@/lib/client-axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Signup thunk
 export const signupUser = createAsyncThunk(
   "user/signupUser",
   async (userData, thunkAPI) => {
+    console.log("request come")
     try {
       const response = await api.post("/auth/signup", userData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data.data.user; // return the user data
     } catch (error) {
+      console.log(error)
       const message =
         error.response?.data?.message || error.message || "Signup failed";
       return thunkAPI.rejectWithValue(message);
@@ -22,9 +24,11 @@ export const signupUser = createAsyncThunk(
 // Login thunk
 export const loginUser = createAsyncThunk(
   "user/loginUser",
-  async (_, thunkAPI) => {
+  async (data, thunkAPI) => {
     try {
-      const response = await api.post("/auth/login");
+      const response = await api.post("/auth/login", data, {
+        headers: { "Content-Type": "application/json" },
+      });
       return response.data.data.user;
     } catch (error) {
       const message =
@@ -33,6 +37,17 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+export const logoutUser = createAsyncThunk("user/logout", async (_, thunkAPI) => {
+  try{
+    const response = await api.post("/auth/logout");
+    return null;
+  }catch(err){
+    const message =
+        err.response?.data?.message || err.message || "Logout failed";
+      return thunkAPI.rejectWithValue(message);
+  }
+})
 
 
 const storedUser =
@@ -48,10 +63,10 @@ const userSlice = createSlice({
   name: "userData",
   initialState,
   reducers: {
-    logoutUser: (state) => {
-      state.user = null;
-      localStorage.removeItem("user");
-    },
+    // logoutUser: (state) => {
+    //   state.user = null;
+    //   localStorage.removeItem("user");
+    // },
   },
   extraReducers: (builder) => {
     builder
@@ -84,8 +99,24 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+
+      //logout
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        localStorage.removeItem("user");
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   },
 });
 
-export const { logoutUser } = userSlice.actions;
+
 export default userSlice.reducer;

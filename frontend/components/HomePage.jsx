@@ -42,7 +42,7 @@ const HomePage = () => {
             affordably, reliably, and efficiently.
           </h2>
         </div>
-        <div className="md:ml-20 lg:ml-6 mt-3 md:mt-4 lg:mt-0 z-10">
+        <div className="md:ml-20 lg:ml-6 mt-3 md:mt-4 lg:mt-0 z-0">
           <Image
             src="/images/homeImage.png"
             alt="home page image"

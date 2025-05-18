@@ -1,11 +1,10 @@
-
 import { DM_Sans, Roboto } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/Footer";
 import ReduxProvider from "./providers";
-import ToastProvider from "@/components/ToastProvider";
+import ToastProvider from "@/components/helper/ToastProvider";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -28,10 +27,15 @@ const codeProBlackLC = localFont({
 });
 
 export const metadata = {
-  viewport: "width=device-width, initial-scale=1.0",
   title: "Opt.national",
-  description: "A newslatter service platform",
+  description: "A newsletter service platform",
 };
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 
 export default function RootLayout({ children }) {
   return (

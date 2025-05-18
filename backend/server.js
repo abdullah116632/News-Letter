@@ -20,6 +20,8 @@ app.use(cors({
   credentials: true                
 }));
 
+console.log("url is ",process.env.FRONTEND_URL)
+
 
 app.use(express.json());
 app.use(express.urlencoded());
