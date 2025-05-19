@@ -1,5 +1,7 @@
 'use client';
-import React from 'react';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const dummyReviews = [
   {
@@ -22,11 +24,16 @@ const dummyReviews = [
   },
 ];
 
+
 const ReviewList = () => {
+
+  const dispatch = useDispatch();
+
   const handleDelete = (id) => {
     console.log('Delete review with id:', id);
-    // Confirm and call API to delete review
   };
+
+
 
   return (
     <div className="min-h-screen bg-gray-950 rounded-2xl text-white p-6">

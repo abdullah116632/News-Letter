@@ -6,7 +6,7 @@ import SideMenu from "./SideMenu";
 import Image from "next/image";
 import ModalManager from "../modal/ModalManager";
 import { openModal } from "@/redux/slices/modalSlice";
-import UserOption from "../UserOption";
+import UserOption from "./UserOption";
 
 const SideMenuControl = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

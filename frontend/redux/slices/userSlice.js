@@ -6,14 +6,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 export const signupUser = createAsyncThunk(
   "user/signupUser",
   async (userData, thunkAPI) => {
-    console.log("request come")
     try {
       const response = await api.post("/auth/signup", userData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data.data.user; // return the user data
     } catch (error) {
-      console.log(error)
       const message =
         error.response?.data?.message || error.message || "Signup failed";
       return thunkAPI.rejectWithValue(message);

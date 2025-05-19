@@ -1,11 +1,17 @@
-'use client';
-import React, { useState } from 'react';
+"use client";
+import { createBlog } from "@/redux/slices/blogSlice";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const BlogForm = () => {
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.blogData);
+
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -15,19 +21,25 @@ const BlogForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // You can now send 'image', 'title', and 'description' to your API
-
     console.log({ image, title, description });
 
-    // Reset form
-    setImage(null);
-    setPreview(null);
-    setTitle('');
-    setDescription('');
-    e.target.reset();
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("img", image);
+
+    try {
+      await dispatch(createBlog(formData)).unwrap();
+      toast.success("New Blog created");
+      setImage(null);
+      setPreview(null);
+      setTitle("");
+      setDescription("");
+    } catch (err) {
+      toast.error(err || "Signup failed.");
+    }
   };
 
   return (
@@ -48,7 +60,7 @@ const BlogForm = () => {
             required
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full bg-gray-800 text-sm p-2 rounded-lg border border-white/20 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600"
+            className="w-full bg-gray-800 text-sm p-2 rounded-lg border border-white/20 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white file:cursor-pointer hover:file:bg-red-600 cursor-pointer"
           />
           {preview && (
             <img
@@ -74,7 +86,9 @@ const BlogForm = () => {
 
         {/* Description Input */}
         <div>
-          <label className="block mb-2 text-sm font-semibold">Description</label>
+          <label className="block mb-2 text-sm font-semibold">
+            Description
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -88,9 +102,40 @@ const BlogForm = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full py-3 rounded-lg bg-red-500 hover:bg-red-600 font-semibold transition"
+          disabled={loading}
+          className={`w-full py-3 rounded-lg font-semibold transition cursor-pointer ${
+            loading
+              ? "bg-red-400 cursor-not-allowed"
+              : "bg-red-500 hover:bg-red-600"
+          }`}
         >
-          Submit Blog
+          {loading ? (
+            <div className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              Submitting...
+            </div>
+          ) : (
+            "Submit Blog"
+          )}
         </button>
       </form>
     </div>

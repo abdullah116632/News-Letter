@@ -3,9 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import SignupModal from "./SignupModal";
 import LoginModal from "./LoginModal";
 import LogoutModal from "./LogoutModal";
+import UpdateBlogModal from "./UpdateBlogModal";
+import DeleteBlogModal from "./deleteBlogModal";
 
 const ModalManager = () => {
-  const { modalName, isOpen } = useSelector((state) => state.modal);
+  const { modalName, isOpen, data } = useSelector((state) => state.modal);
   const dispatch = useDispatch();
 
   if (!isOpen) return null;
@@ -18,7 +20,11 @@ const ModalManager = () => {
     case "login":
         return <LoginModal onClose={handleClose} />;
     case "logout":
-      return <LogoutModal onClose={handleClose} />
+      return <LogoutModal onClose={handleClose} />;
+    case "updateBlog":
+      return <UpdateBlogModal onClose={handleClose} blogData={data} />;
+    case "deleteBlog":
+      return <DeleteBlogModal onClose={handleClose} blogId={data} />
     default:
       return null;
   }
