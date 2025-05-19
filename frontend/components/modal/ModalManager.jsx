@@ -5,6 +5,7 @@ import LoginModal from "./LoginModal";
 import LogoutModal from "./LogoutModal";
 import UpdateBlogModal from "./UpdateBlogModal";
 import DeleteBlogModal from "./deleteBlogModal";
+import DeleteReviewModal from "./reviewDeleteModal";
 
 const ModalManager = () => {
   const { modalName, isOpen, data } = useSelector((state) => state.modal);
@@ -24,7 +25,9 @@ const ModalManager = () => {
     case "updateBlog":
       return <UpdateBlogModal onClose={handleClose} blogData={data} />;
     case "deleteBlog":
-      return <DeleteBlogModal onClose={handleClose} blogId={data} />
+      return <DeleteBlogModal onClose={handleClose} blogId={data} />;
+    case "deleteReview":
+      return <DeleteReviewModal onClose={handleClose} reviewId={data} />;
     default:
       return null;
   }

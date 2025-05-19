@@ -16,12 +16,11 @@ export const createBlog = createAsyncThunk("blog/createBlog", async (data, thunk
   }
 })
 
-export const fetchAllBlogs = createAsyncThunk("blog/fetchAllBlogs", async (state, thunkAPI) => {
+export const fetchAllBlogs = createAsyncThunk("blog/fetchAllBlogs", async (_, thunkAPI) => {
   try{
     const response = await api.get("/blog/", {
       headers: { "Content-Type": "application/json" },
     })
-    console.log(response);
     return response.data.data.blogs;
   }catch(error){
     const message = error.response?.data?.message;

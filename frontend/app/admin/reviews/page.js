@@ -1,65 +1,75 @@
-'use client';
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
+"use client";
 
-const dummyReviews = [
-  {
-    id: 1,
-    name: 'Alice Johnson',
-    message:
-      'This platform is amazing! It helped me get my newsletter out easily and professionally.',
-  },
-  {
-    id: 2,
-    name: 'Mark Wilson',
-    message:
-      'I really appreciate the UI/UX of the dashboard. Super intuitive and clean!',
-  },
-  {
-    id: 3,
-    name: 'Jane Smith',
-    message:
-      'Great features! I especially liked the analytics section for tracking engagement.',
-  },
-];
-
+import { fetchAllReview } from "@/redux/slices/reviewSlice";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { FaStar } from "react-icons/fa";
+import { openModal } from "@/redux/slices/modalSlice";
 
 const ReviewList = () => {
-
   const dispatch = useDispatch();
+  const { reviews } = useSelector((state) => state.reviewData);
 
-  const handleDelete = (id) => {
-    console.log('Delete review with id:', id);
-  };
-
-
+  useEffect(() => {
+    const getReview = async () => {
+      try {
+        await dispatch(fetchAllReview()).unwrap();
+      } catch (err) {
+        toast.error(err || "Fetch review failed");
+      }
+    };
+    getReview();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-950 rounded-2xl text-white p-6">
       <h2 className="text-2xl font-bold mb-6 text-green-400">User Reviews</h2>
 
       <div className="space-y-6">
-        {dummyReviews.map((review) => (
+        {reviews?.map((review) => (
           <div
-            key={review.id}
-            className="bg-gray-900 border border-white/10 p-4 rounded-xl flex flex-col md:flex-row gap-4 items-start"
+            key={review?.id}
+            className="bg-gray-900 border border-white/10 p-4 rounded-xl flex flex-col gap-3"
           >
             {/* Reviewer Info */}
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold mb-1 text-blue-400">
-                {review.name}
-              </h3>
-              <p className="text-sm text-gray-300 line-clamp-4">
-                {review.message}
-              </p>
+            <div className="flex items-center gap-3">
+              <img
+                src={review?.user.img || "/default-avatar.png"}
+                alt={review?.user.fullName || "User"}
+                className="w-10 h-10 rounded-full object-cover border border-white/20"
+              />
+              <span className="text-sm font-medium text-white">
+                {review?.user.fullName || "Anonymous"}
+              </span>
             </div>
 
+            {/* Rating */}
+            <div className="flex items-center gap-1">
+              {[...Array(5)].map((_, i) => (
+                <FaStar
+                  key={i}
+                  size={18}
+                  className={
+                    i < review.rating
+                      ? "text-yellow-400"
+                      : "text-gray-600"
+                  }
+                />
+              ))}
+              <span className="ml-2 text-sm text-gray-400">
+                ({review.rating})
+              </span>
+            </div>
+
+            {/* Comment */}
+            <p className="text-sm text-gray-300">{review.comment}</p>
+
             {/* Action */}
-            <div className="mt-4 md:mt-0">
+            <div className="flex justify-end">
               <button
-                onClick={() => handleDelete(review.id)}
-                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-medium"
+                onClick={() => dispatch(openModal({modalName: "deleteReview", data: review._id}))}
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer"
               >
                 Delete
               </button>
