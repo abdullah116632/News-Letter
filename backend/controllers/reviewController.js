@@ -34,7 +34,7 @@ export const getAllReviews = async (req, res, next) => {
 
     const total = await Review.countDocuments();
     const reviews = await Review.find()
-      .populate("user", "fullName img profession institution")
+      .populate("user")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);

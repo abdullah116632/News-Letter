@@ -1,13 +1,27 @@
-import { use } from "react";
-import { blogs } from "@/data/blogs";
+// import { use } from "react";
+// import { blogs } from "@/data/blogs";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getServerAxios } from "@/lib/server-axios";
 
-const BlogDetails = ({ params }) => {
-  const { id } = use(params);
+const BlogDetails = async ({ params }) => {
+  const { id } = await params;
 
-  const blog = blogs.find((b) => b.id.toString() === id);
+  // const blog = blogs.find((b) => b.id.toString() === id);
+
+  const axios = await getServerAxios();
+  let blog = null;
+
+  try {
+    const response = await axios.get(`/blog/${id}`);
+    blog = response.data.data.blog;
+    // console.log("blog", blog);
+  } catch (err) {
+    console.error("Error fetching blogs:", err);
+    redirect("/");
+  }
+
   if (!blog) {
     notFound();
   }
@@ -29,7 +43,7 @@ const BlogDetails = ({ params }) => {
         {/* Blog Image */}
         <div className="w-full lg:w-1/2">
           <Image
-            src={blog.image}
+            src={blog.img}
             alt={blog.title}
             width={600}
             height={400}

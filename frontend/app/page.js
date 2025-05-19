@@ -2,7 +2,7 @@ import Blogs from "@/components/Blogs";
 import HomePage from "@/components/HomePage";
 import MissionAndServices from "@/components/MissionAndServices";
 import Pricing from "@/components/Pricing";
-import SubscribersComments from "@/components/SubscribersComments";
+import UserReview from "@/components/UserReview";
 import Test from "@/components/Test"
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
         <HomePage />
         <MissionAndServices />
         <Pricing />
-        <SubscribersComments />
+        <UserReview />
         <Blogs />
         {/* <Test /> */}
       </main>

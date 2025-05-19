@@ -1,8 +1,21 @@
-import { blogs } from "@/data/blogs";
+// import { blogs } from "@/data/blogs";
+import { getServerAxios } from "@/lib/server-axios";
 import Image from "next/image";
 import Link from "next/link";
 
-const BlogPage = () => {
+const BlogPage = async () => {
+  const axios = await getServerAxios();
+    let blogs = null;
+  
+    try {
+        const response = await axios.get("/blog");
+        blogs = response.data.data.blogs;
+        console.log(blogs)
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+        redirect("/");
+      }
+
   return (
     <div className="relative px-4 sm:px-8 md:px-14 py-10">
       {/* Heading */}
@@ -22,7 +35,7 @@ const BlogPage = () => {
 
       {/* Blog Cards Container */}
       <div className="w-full flex justify-center flex-wrap gap-8 md:gap-12 xl:gap-16">
-        {blogs.map((item, idx) => (
+        {blogs?.map((item, idx) => (
           <div
             key={idx}
             className="bg-[#00200A4A] border-2 border-white/10 rounded-2xl px-4 py-6 w-full sm:w-[22rem] md:w-[24rem] lg:w-[26rem] shadow-lg hover:scale-[1.02] transition-transform duration-300"
@@ -30,7 +43,7 @@ const BlogPage = () => {
             {/* Image & Title */}
             <div className="flex flex-col justify-center items-center mb-4">
               <Image
-                src={item.image}
+                src={item.img}
                 alt="blog image"
                 height={300}
                 width={350}
@@ -46,7 +59,7 @@ const BlogPage = () => {
               <p className="text-sm sm:text-base text-gray-200 px-4 max-h-[11em] overflow-hidden mb-4">
                 {item.description}
               </p>
-              <Link href={`/blogs/${item.id}`}>
+              <Link href={`/blogs/${item._id}`}>
                 <button className="bg-white text-black font-bold text-sm sm:text-base px-5 sm:px-6 py-1.5 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-[#FF00FB] hover:via-[#9B00FF] hover:to-[#00D9FF] hover:text-white cursor-pointer">
                   READ MORE
                 </button>

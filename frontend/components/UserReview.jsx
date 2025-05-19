@@ -1,8 +1,22 @@
 import { comments } from "@/data/subscribersComments";
-import CommentSlider from "./CommentSlider";
+import UserReviewSlider from "./UserReviewSlider";
 import Link from "next/link";
+import { getServerAxios } from "@/lib/server-axios";
 
-const SubscribersComments = () => {
+const UserReview = async () => {
+
+  const axios = await getServerAxios();
+    let reviews = null;
+  
+    try {
+      const response = await axios.get("/review/");
+      reviews = response.data.data.reviews;
+      // console.log("review array", reviews)
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+      redirect("/");
+    }
+
   return (
     <div className="relative mt-10 xl:mt-24 mb-10 xl:mb-36">
       {/* Background image behind the comment section */}
@@ -15,7 +29,7 @@ const SubscribersComments = () => {
           <h5 className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF00FB] to-[#FFAE00] w-fit xxs:text-xl sm:text-2xl md:text-4xl lg:text-6xl font-bold">
             What Our Subscribers Say
           </h5>
-          <Link href="/comments">
+          <Link href="/review">
             <button className="text-[#FF0000] border-2 border-[#FF0000] h-8 sm:h-12 rounded-3xl text-sm lg:text-2xl bg-gradient-to-r from-[#FFFFFF] to-[#999999] font-dmSans font-bold px-2 sm:px-4 cursor-pointer">
               View All
             </button>
@@ -24,11 +38,11 @@ const SubscribersComments = () => {
 
         {/* Comment slider: displays the list of subscriber comments */}
         <div className="px-3 sm:px-2 lg:px-8 xl:px-20">
-          <CommentSlider comments={comments} />
+          <UserReviewSlider reviews={reviews} />
         </div>
       </div>
     </div>
   );
 };
 
-export default SubscribersComments;
+export default UserReview;

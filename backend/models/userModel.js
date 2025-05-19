@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
     },
-    institution: {
+    institute: {
       type: String,
     },
     fieldOfStudy: {

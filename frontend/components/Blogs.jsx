@@ -1,8 +1,20 @@
-import { blogs } from "@/data/blogs";
+// import { blogs } from "@/data/blogs";
 import BlogSlider from "./BlogSlider";
 import Link from "next/link";
+import { getServerAxios } from "@/lib/server-axios";
 
-const Blogs = () => {
+const Blogs = async () => {
+  const axios = await getServerAxios();
+  let blogs = null;
+
+  try {
+      const response = await axios.get("/blog");
+      blogs = response.data.data.blogs;
+    } catch (err) {
+      console.error("Error fetching blogs:", err);
+      redirect("/");
+    }
+
   return (
     <div className="relative w-full mt-10">
       {/* Background Image Layer */}
