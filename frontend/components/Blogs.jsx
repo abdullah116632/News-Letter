@@ -1,4 +1,3 @@
-// import { blogs } from "@/data/blogs";
 import BlogSlider from "./BlogSlider";
 import Link from "next/link";
 import { getServerAxios } from "@/lib/server-axios";
@@ -6,19 +5,20 @@ import { getServerAxios } from "@/lib/server-axios";
 const Blogs = async () => {
   const axios = await getServerAxios();
   let blogs = null;
+  let error = null;
 
   try {
-      const response = await axios.get("/blog");
-      blogs = response.data.data.blogs;
-    } catch (err) {
-      console.error("Error fetching blogs:", err);
-      redirect("/");
-    }
+    const response = await axios.get("/blog");
+    blogs = response.data.data.blogs;
+  } catch (err) {
+    console.error("Error fetching blogs:", err);
+    error = "Failed to load blogs";
+  }
 
   return (
     <div className="relative w-full mt-10">
       {/* Background Image Layer */}
-      <div className='absolute inset-0 -z-10 w-full h-full bg-[url("/images/blogBg.png")] bg-no-repeat bg-contain' />
+      <div className='absolute inset-0 -z-10 w-[100vw] h-[80vh] md:h-[66vw] bg-[url("/images/blogBg.png")] bg-no-repeat bg-contain' />
 
       {/* Foreground Content */}
       <div className="w-full relative z-10">
@@ -33,7 +33,11 @@ const Blogs = async () => {
           </Link>
         </div>
         <div className="px-6 md:px-3 lg:px-10 xl:px-20">
-          <BlogSlider blogs={blogs} />
+          {error ? (
+            <p className="text-red-500 text-center text-5xl md:h-[80vh]">{error}</p>
+          ) : (
+            <BlogSlider blogs={blogs} />
+          )}
         </div>
       </div>
     </div>

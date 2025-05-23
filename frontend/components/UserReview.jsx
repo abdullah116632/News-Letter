@@ -1,30 +1,27 @@
-import { comments } from "@/data/subscribersComments";
 import UserReviewSlider from "./UserReviewSlider";
 import Link from "next/link";
 import { getServerAxios } from "@/lib/server-axios";
 
 const UserReview = async () => {
-
   const axios = await getServerAxios();
-    let reviews = null;
-  
-    try {
-      const response = await axios.get("/review/");
-      reviews = response.data.data.reviews;
-      // console.log("review array", reviews)
-    } catch (err) {
-      console.error("Error fetching profile:", err);
-      redirect("/");
-    }
+  let reviews = null;
+  let error = null;
+
+  try {
+    const response = await axios.get("/review/");
+    reviews = response.data.data.reviews;
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    error = "Failed to load reviews";
+  }
 
   return (
     <div className="relative mt-10 xl:mt-24 mb-10 xl:mb-36">
-      {/* Background image behind the comment section */}
+      {/* Background */}
       <div className='absolute -z-10 w-[100vw] h-[80vh] md:h-[66vw] bg-[url("/images/commentsBg.png")] bg-no-repeat bg-contain' />
 
-      {/* Foreground content */}
+      {/* Foreground */}
       <div className="w-full">
-        {/* Header: Title and 'View All' button */}
         <div className="flex justify-between px-4 md:px-12 xl:px-24 py-3 md:pb-3 xl:pb-12 md:mb-7">
           <h5 className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF00FB] to-[#FFAE00] w-fit xxs:text-xl sm:text-2xl md:text-4xl lg:text-6xl font-bold">
             What Our Subscribers Say
@@ -36,9 +33,12 @@ const UserReview = async () => {
           </Link>
         </div>
 
-        {/* Comment slider: displays the list of subscriber comments */}
         <div className="px-3 sm:px-2 lg:px-8 xl:px-20">
-          <UserReviewSlider reviews={reviews} />
+          {error ? (
+            <p className="pt-10 sm:pt-14 md:pt-12 xl:pt-14 text-red-500 text-3xl md:text-5xl md:h-[80vh]">{error}</p>
+          ) : (
+            <UserReviewSlider reviews={reviews} />
+          )}
         </div>
       </div>
     </div>

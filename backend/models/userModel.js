@@ -64,6 +64,10 @@ const userSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
     },
+    isSubscribed: {
+      type: Boolean,
+      default: false
+    },
     institute: {
       type: String,
     },

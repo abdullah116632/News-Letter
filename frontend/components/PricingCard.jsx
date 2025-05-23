@@ -1,3 +1,8 @@
+"use client";
+
+import axios from "axios";
+import { toast } from "react-toastify";
+
 const PricingCard = ({
   title,
   titleColor,
@@ -6,6 +11,28 @@ const PricingCard = ({
   features,
   price,
 }) => {
+  const subscribe = async () => {
+    try {
+      console.log("working subscribe");
+      const { data } = await axios.post(
+        process.env.NEXT_PUBLIC_API_BASE_URL + "/payment/",
+        { price },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if(data.success){
+        console.log(data);
+        window.location.replace(data.url);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(err.message);
+    }
+  };
+
   return (
     <div className="w-full xl:w-[25vw] font-bold border-3 border-white shadow-[0_0_25px_rgba(0,238,255,0.3)] bg-[#5555555E] rounded-3xl pl-3 md:pl-2 lg:pl-3 xl:pl-5 pr-0.5 hover:border-[#00EEFF] hover:shadow-[0_0_25px_rgba(0,238,255,0.3)] hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden">
       <div className="absolute inset-0 -z-10 bg-[#9900FF]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -44,7 +71,10 @@ const PricingCard = ({
         <p className="font-black font-codeProBlackLC text-2xl sm:text-4xl xl:leading-9 my-3 bg-gradient-to-b from-[#00FF11] to-[#FFFFFF] bg-clip-text text-transparent group-hover:animate-bounce">
           <span className="block">Tk. {price}/</span>month
         </p>
-        <button className="font-codeProBlackLC font-black border-2 border-white/50 rounded-full text-xl sm:text-2xl md:text-3xl px-2 py-1 sm:px-4 sm:py-3 xl:px-10 xl:py-3 mb-2 xl:mb-4 bg-gradient-to-r from-[#D400B8] to-[#9900FF] hover:from-[#9900FF] hover:to-[#D400B8] hover:shadow-[0_0_15px_rgba(153,0,255,0.5)] hover:scale-105 transition-all duration-300 cursor-pointer">
+        <button
+          className="font-codeProBlackLC font-black border-2 border-white/50 rounded-full text-xl sm:text-2xl md:text-3xl px-2 py-1 sm:px-4 sm:py-3 xl:px-10 xl:py-3 mb-2 xl:mb-4 bg-gradient-to-r from-[#D400B8] to-[#9900FF] hover:from-[#9900FF] hover:to-[#D400B8] hover:shadow-[0_0_15px_rgba(153,0,255,0.5)] hover:scale-105 transition-all duration-300 cursor-pointer"
+          onClick={() => subscribe()}
+        >
           BUY NOW
         </button>
       </div>

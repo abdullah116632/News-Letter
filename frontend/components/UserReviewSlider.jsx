@@ -6,7 +6,7 @@ import Slider from './helper/Slider';
 const UserReviewSlider = ({reviews}) => {
   return (
       <Slider>
-      {reviews.slice(0, 7).map((review, idx) => (
+      {reviews?.slice(0, 7).map((review, idx) => (
           <SwiperSlide key={idx}>
             <UserReviewCard review={review} />
           </SwiperSlide>
