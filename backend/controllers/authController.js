@@ -1,17 +1,13 @@
 import User from "../models/userModel.js";
 import CustomError from "../utils/customErrorClass.js";
-import cloudinary from "../db/cloudinaryConnection.js";
 import generateTokenAndSetToken from "../utils/generateToken.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import compareString from "../utils/conpareString.js";
 
 export const signup = async (req, res, next) => {
-  console.log("request come")
+  console.log("request come");
   try {
-
     const { fullName, email, password, confirmPassword } = req.body;
-
-    
 
     if (!fullName || !email || !password || !confirmPassword) {
       const error = new CustomError(
@@ -40,7 +36,10 @@ export const signup = async (req, res, next) => {
       return next(err);
     }
 
-    const response = await uploadToCloudinary(req.file.buffer, "newsLater/user-profilePic");
+    const response = await uploadToCloudinary(
+      req.file.buffer,
+      "newsLater/user-profilePic"
+    );
 
     const newUser = new User({
       fullName,
@@ -108,13 +107,12 @@ export const login = async (req, res, next) => {
 };
 
 export const logout = (req, res) => {
-
   res.cookie("jwt", "", {
-  maxAge: 0,
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "Strict",
-});
+    maxAge: 0,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
 
   res.status(200).json({
     status: "success",
@@ -123,3 +121,45 @@ export const logout = (req, res) => {
   });
 };
 
+export const updatePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    console.log(currentPassword, newPassword)
+
+    if(!currentPassword || !newPassword || !confirmPassword){
+      console.log("inside if")
+      return next(new CustomError(400, "current password and new password confirmPassword are required"))
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+
+    if (!user) {
+      return next(new CustomError(404, "User not found"));
+    }
+
+    if (newPassword !== confirmPassword) {
+      const err = new CustomError(
+        400,
+        "password and confirm password must be same"
+      );
+      return next(err);
+    }
+
+    const isPasswordValid = await compareString(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return next(new CustomError(401, "Current password is incorrect"));
+    }
+
+    user.password = newPassword;
+    user.confirmPassword = newPassword;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

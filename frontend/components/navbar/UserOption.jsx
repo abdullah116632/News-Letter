@@ -37,11 +37,9 @@ const UserOption = ({ setUserOptionOpen }) => {
           </Link>
           
 
-          <Link href="/update-password" className="block">
-            <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer rounded-md">
+            <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer rounded-md" onClick={() => dispatch(openModal({ modalName: "updatePassword" }))}>
               Update Password
             </li>
-          </Link>
 
           <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer rounded-md">
             My subscription

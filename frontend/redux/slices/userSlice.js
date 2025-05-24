@@ -47,6 +47,19 @@ export const logoutUser = createAsyncThunk("user/logout", async (_, thunkAPI) =>
   }
 })
 
+export const updatePassword = createAsyncThunk("user/updatePassword", async (data, thunkAPI) => {
+  try{
+    const response = await api.post("/auth/update-password", data, {
+      headers: { "Content-Type": "application/json" },
+    })
+    return response.data.message;
+  }catch(error){
+    const message =
+        error.response?.data?.message || error.message || "update password failed";
+      return thunkAPI.rejectWithValue(message);
+  }
+})
+
 
 const storedUser =
   typeof window !== "undefined" ? localStorage.getItem("user") : null;
@@ -110,6 +123,17 @@ const userSlice = createSlice({
         localStorage.removeItem("user");
       })
       .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(updatePassword.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updatePassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
