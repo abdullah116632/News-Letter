@@ -1,8 +1,11 @@
+import otpGenerator from "otp-generator";
 import User from "../models/userModel.js";
 import CustomError from "../utils/customErrorClass.js";
 import generateTokenAndSetToken from "../utils/generateToken.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import compareString from "../utils/conpareString.js";
+import Otp from "../models/otpModel.js";
+import sendEmail from "../utils/sendMail.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -124,8 +127,13 @@ export const updatePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
-    if(!currentPassword || !newPassword || !confirmPassword){
-      return next(new CustomError(400, "current password and new password confirmPassword are required"))
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return next(
+        new CustomError(
+          400,
+          "current password and new password confirmPassword are required"
+        )
+      );
     }
 
     const user = await User.findById(req.user._id).select("+password");
@@ -160,3 +168,104 @@ export const updatePassword = async (req, res, next) => {
     next(error);
   }
 };
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) return next(new CustomError(404, "User not found"));
+
+    const otp = otpGenerator.generate(6, {
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1500); // 15 mins
+
+    await Otp.create({ email, otp, expiresAt });
+
+    await sendEmail("otp", {user, otp});
+
+    res.status(200).json({ success: true, message: "OTP sent to email" });
+  } catch (err) {
+    console.log(err)
+    next(err);
+  }
+};
+
+export const verifyOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return next(new CustomError(400, "Email and OTP required"));
+
+    const record = await Otp.findOne({ email, otp });
+    if (!record) return next(new CustomError(400, "Invalid OTP"));
+
+    if (record.expiresAt < new Date()) {
+      await Otp.deleteOne({ email }); // Optional cleanup
+      return next(new CustomError(400, "OTP expired"));
+    }
+
+    // Mark the OTP as verified
+    record.isverifyed = true;
+    await record.save();
+
+    res.status(200).json({
+      success: true,
+      message: "OTP is valid and verified",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword, confirmPassword } = req.body;
+    
+    if (!email || !otp || !newPassword || !confirmPassword) {
+      return next(new CustomError(400, "All fields are required"));
+    }
+
+    if (newPassword !== confirmPassword) {
+      return next(new CustomError(400, "Passwords do not match"));
+    }
+
+    const record = await Otp.findOne({ email, otp });
+    if (!record || record.expiresAt < new Date()) {
+      return next(new CustomError(400, "Invalid or expired OTP"));
+    }
+
+    if (!record.isverifyed) {
+      return next(new CustomError(403, "OTP not verified. Please verify first."));
+    }
+
+    const user = await User.findOne({ email }).select("+password +confirmPassword");
+    if (!user) return next(new CustomError(404, "User not found"));
+
+    // Set & save password
+    user.password = newPassword;
+    user.confirmPassword = confirmPassword;
+    await user.save();
+
+    await Otp.deleteMany({ email }); // Clean up all OTPs for the user
+
+    generateTokenAndSetToken(user._id, res); // Log the user in
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: userResponse,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+

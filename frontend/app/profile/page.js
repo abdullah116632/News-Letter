@@ -1,4 +1,3 @@
-
 import { redirect } from "next/navigation";
 import { getServerAxios } from "@/lib/server-axios";
 import ProfileCard from "@/components/profileRoute/ProfileCard";
@@ -16,6 +15,7 @@ const UserProfile = async () => {
   try {
     const response = await axios.get("/user/");
     profileData = response.data.data.user;
+    console.log(profileData)
   } catch (err) {
     console.error("Error fetching profile:", err);
     redirect("/");

@@ -6,7 +6,7 @@ import { closeModal, openModal } from "@/redux/slices/modalSlice";
 import { loginUser } from "@/redux/slices/userSlice";
 import { toast } from "react-toastify";
 
-const LoginModal = ({ onForgotPassword }) => {
+const LoginModal = ({ onClose }) => {
   const { loading } = useSelector((state) => state.userData);
   const dispatch = useDispatch();
 
@@ -60,7 +60,7 @@ const LoginModal = ({ onForgotPassword }) => {
     try {
       await dispatch(loginUser(formData)).unwrap();
       toast.success("login successful!");
-      dispatch(closeModal())
+      onClose()
     } catch (err) {
       toast.error(err || "Login failed, try again later");
     }
@@ -72,7 +72,7 @@ const LoginModal = ({ onForgotPassword }) => {
         {/* Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-black cursor-pointer"
-          onClick={() => dispatch(closeModal())}
+          onClick={() => onClose()}
         >
           <RxCross2 size={20} />
         </button>
@@ -171,7 +171,7 @@ const LoginModal = ({ onForgotPassword }) => {
           <p className="mt-2">
             <span
               className="text-blue-600 font-semibold cursor-pointer hover:underline"
-              onClick={onForgotPassword}
+              onClick={() => dispatch(openModal({modalName: "forgotPassword"}))}
             >
               Forgot password?
             </span>

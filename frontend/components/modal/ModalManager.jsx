@@ -8,6 +8,9 @@ import DeleteBlogModal from "./deleteBlogModal";
 import DeleteReviewModal from "./reviewDeleteModal";
 import UpdatePasswordModal from "./updatePasswordModal";
 import UpdateUserModal from "../profileRoute/UpdateUserModal";
+import ForgetPasswordModal from "./ForgetPasswordModal";
+import VerifyOtpModal from "./VerifyOtpModal";
+import ResetPasswordModal from "./ResetPasswordModal";
 
 const ModalManager = () => {
   const { modalName, isOpen, data } = useSelector((state) => state.modal);
@@ -34,6 +37,13 @@ const ModalManager = () => {
       return <UpdatePasswordModal onClose={handleClose} />;
     case "updateProfile":
       return <UpdateUserModal onClose={handleClose} />;
+    case "forgotPassword":
+      return <ForgetPasswordModal onClose={handleClose} />;
+    case "verifyOtp":
+      return <VerifyOtpModal onClose={handleClose} email={data} />;
+    case "resetPassword":
+      return <ResetPasswordModal onClose={handleClose} data={data} />;
+
     default:
       return null;
   }
