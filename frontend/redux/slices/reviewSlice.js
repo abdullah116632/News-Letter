@@ -25,6 +25,18 @@ export const deleteReview = createAsyncThunk("review/deleteReview", async (revie
     }
 })
 
+export const createReview = createAsyncThunk("review/createReview", async (data, thunkAPI) => {
+    try{
+        const res = await api.post("/review", data, {
+            headers: {"Content-Type": "application/json"}
+        })
+        return res.data.data.review;
+    }catch(error){
+        const msg = err.response?.data?.message || err.message || "review crate failed";
+        return thunkAPI.rejectWithValue(msg);
+    }
+})
+
 const initialState = {
     reviews: [],
     loading: false,
@@ -52,7 +64,7 @@ const reviewSlice = createSlice({
             })
 
 
-            .addCase(deleteReview.pending, (state, action) => {
+            .addCase(deleteReview.pending, (state) => {
                 state.loading = true;
             })
             .addCase(deleteReview.fulfilled, (state, action) => {
@@ -62,6 +74,18 @@ const reviewSlice = createSlice({
             .addCase(deleteReview.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.page;
+            })
+
+            .addCase(createReview.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createReview.fulfilled, (state, action) => {
+                state.loading = false;
+                state.reviews = [action.payload, ...state.reviews];
+            })
+            .addCase(createReview.rejected, (state, aciton) => {
+                state.loading = false;
+                state.error = aciton.payload;
             })
     }
 })

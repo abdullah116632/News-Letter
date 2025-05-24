@@ -38,7 +38,7 @@ const BlogForm = () => {
       setTitle("");
       setDescription("");
     } catch (err) {
-      toast.error(err || "Signup failed.");
+      toast.error(err || "Blog creation failed.");
     }
   };
 

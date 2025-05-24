@@ -1,24 +1,31 @@
 "use client";
+import { createReview } from "@/redux/slices/reviewSlice";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const ReviewForm = () => {
+  const dispatch = useDispatch();
+  const {loading} = useSelector(state => state.reviewData);
+
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    setLoading(true);
     const data = {
       rating,
       comment,
     };
-    console.log("Submitting review:", data);
+    try{
+      await dispatch(createReview(data)).unwrap();
+      setRating(0);
+      setComment("");
+      toast.success("Review submitted");
+    }catch(err){
+      toast.error(err || "Review submission failed")
+    }
 
-    // Simulate API delay
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
   };
 
   return (
@@ -60,7 +67,7 @@ const ReviewForm = () => {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition flex items-center gap-2"
+          className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition flex items-center gap-2 cursor-pointer"
         >
           {loading ? (
             <svg

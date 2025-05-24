@@ -124,10 +124,8 @@ export const logout = (req, res) => {
 export const updatePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
-    console.log(currentPassword, newPassword)
 
     if(!currentPassword || !newPassword || !confirmPassword){
-      console.log("inside if")
       return next(new CustomError(400, "current password and new password confirmPassword are required"))
     }
 
