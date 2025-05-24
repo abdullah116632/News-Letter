@@ -26,7 +26,7 @@ const Slider = ({ children }) => {
         className="pb-20"
       >
         {children}
-        <div className="custom-swiper-pagination mt-9 sm:xl:mt-14 xl:mt-20 flex justify-center gap-3" />
+        <div className="custom-swiper-pagination mt-9 mb-20 sm:xl:mt-14 xl:mt-20 flex justify-center gap-3" />
       </Swiper>
   );
 };

@@ -1,20 +1,20 @@
-// import { blogs } from "@/data/blogs";
+// app/blog/page.tsx
 import { getServerAxios } from "@/lib/server-axios";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const BlogPage = async () => {
   const axios = await getServerAxios();
-    let blogs = null;
-  
-    try {
-        const response = await axios.get("/blog");
-        blogs = response.data.data.blogs;
-        console.log(blogs)
-      } catch (err) {
-        console.error("Error fetching blogs:", err);
-        redirect("/");
-      }
+  let blogs = null;
+
+  try {
+    const response = await axios.get("/blog");
+    blogs = response.data.data.blogs;
+  } catch (err) {
+    console.error("Error fetching blogs:", err);
+    redirect("/");
+  }
 
   return (
     <div className="relative px-4 sm:px-8 md:px-14 py-10">
@@ -33,34 +33,35 @@ const BlogPage = async () => {
         </h2>
       </div>
 
-      {/* Blog Cards Container */}
+      {/* Blog Cards */}
       <div className="w-full flex justify-center flex-wrap gap-8 md:gap-12 xl:gap-16">
-        {blogs?.map((item, idx) => (
+        {blogs?.map((item) => (
           <div
-            key={idx}
-            className="bg-[#00200A4A] border-2 border-white/10 rounded-2xl px-4 py-6 w-full sm:w-[22rem] md:w-[24rem] lg:w-[26rem] shadow-lg hover:scale-[1.02] transition-transform duration-300"
+            key={item._id}
+            className="bg-[#00200A4A] border-2 border-white/10 rounded-2xl shadow-lg transition-transform duration-300 hover:scale-[1.02] w-full max-w-sm sm:w-[22rem] md:w-[24rem] lg:w-[26rem] flex flex-col justify-between"
           >
-            {/* Image & Title */}
-            <div className="flex flex-col justify-center items-center mb-4">
+            {/* Image */}
+            <div className="relative w-full h-[220px] rounded-t-xl overflow-hidden">
               <Image
                 src={item.img}
                 alt="blog image"
-                height={300}
-                width={350}
-                className="rounded-lg w-full object-cover max-h-[250px]"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-t-xl"
               />
-              <h6 className="text-base sm:text-lg md:text-xl font-roboto font-semibold text-center px-4 py-3 max-h-[3.5em] overflow-y-auto hide-scrollbar">
-                {item.title}
-              </h6>
             </div>
 
-            {/* Description & Button */}
-            <div className="font-roboto flex flex-col justify-between items-center text-center">
-              <p className="text-sm sm:text-base text-gray-200 px-4 max-h-[11em] overflow-hidden mb-4">
+            {/* Content */}
+            <div className="flex flex-col justify-between items-center text-center p-4">
+              <h6 className="text-lg font-semibold font-roboto mb-2 h-[3em] overflow-hidden line-clamp-2">
+                {item.title}
+              </h6>
+              <p className="text-sm text-gray-200 h-[7.5em] overflow-hidden line-clamp-5 mb-4 px-2">
                 {item.description}
               </p>
+
               <Link href={`/blogs/${item._id}`}>
-                <button className="bg-white text-black font-bold text-sm sm:text-base px-5 sm:px-6 py-1.5 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-[#FF00FB] hover:via-[#9B00FF] hover:to-[#00D9FF] hover:text-white cursor-pointer">
+                <button className="bg-white text-black font-bold px-6 py-1.5 rounded-2xl hover:bg-gradient-to-r hover:from-[#FF00FB] hover:via-[#9B00FF] hover:to-[#00D9FF] hover:text-white transition cursor-pointer">
                   READ MORE
                 </button>
               </Link>

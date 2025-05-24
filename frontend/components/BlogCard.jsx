@@ -3,17 +3,31 @@ import Link from "next/link";
 
 const BlogCard = ({ _id, img, title, description }) => {
   return (
-    <div className="bg-[#8207B34A] border-2 rounded-2xl px-3 py-4">
-      <div className="flex flex-col justify-center items-center">
-        <Image src={img} alt="blog image" height={350} width={380} />
-        <h6 className="text-xl font-roboto font-semibold px-4 py-3 h-[3.5em] overflow-y-scroll hide-scrollbar">
-          {title}
-        </h6>
+    <div className="bg-[#8207B34A] border-2 rounded-2xl p-4 w-full max-w-sm mx-auto flex flex-col justify-between">
+      {/* Image */}
+      <div className="w-full h-[240px] lg:h-[310px] relative rounded-lg overflow-hidden">
+        <Image
+          src={img}
+          alt="blog image"
+          layout="fill"
+          objectFit="cover"
+          className="rounded-lg"
+        />
       </div>
-      <div className="font-roboto flex flex-col justify-center items-center">
-        <p className="text-sm px-7 h-[17em] overflow-hidden">{description}</p>
-        <Link href={`/blogs/${_id}`}>
-          <button className="bg-white text-black font-bold px-6 py-0.5 my-3 rounded-2xl cursor-pointer">
+
+      {/* Title */}
+      <h6 className="text-xl md:text-2xl lg:text-3xl font-roboto font-semibold px-2 py-3 h-[3.5em] md:h-[2em] overflow-hidden text-center">
+        {title}
+      </h6>
+
+      {/* Description & Button */}
+      <div className="font-roboto text-center flex flex-col items-center justify-between flex-grow">
+        <p className="text-sm px-4 h-[8em] overflow-hidden text-ellipsis line-clamp-5">
+          {description}
+        </p>
+
+        <Link href={`/blogs/${_id}`} className="mt-4">
+          <button className="bg-white text-black font-bold px-6 py-1 rounded-2xl cursor-pointer">
             READ MORE
           </button>
         </Link>
