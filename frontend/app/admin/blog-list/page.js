@@ -1,39 +1,44 @@
 "use client";
 
-import { deleteBlog, fetchAllBlogs, updateBlog } from "@/redux/slices/blogSlice";
+import {
+  deleteBlog,
+  fetchAllBlogs,
+  updateBlog,
+} from "@/redux/slices/blogSlice";
 import { openModal } from "@/redux/slices/modalSlice";
+import Image from "next/image";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-const dummyBlogs = [
-  {
-    id: 1,
-    title: "Understanding React Server Components",
-    description:
-      "React Server Components let you build modern user interfaces while keeping performance in mind...",
-    image: "/blog1.jpg",
-  },
-  {
-    id: 2,
-    title: "Mastering Tailwind CSS",
-    description:
-      "Tailwind CSS provides utility-first classes that enable fast and consistent styling across your web apps...",
-    image: "/blog2.jpg",
-  },
-  // Add more dummy blogs here
-];
+// const dummyBlogs = [
+//   {
+//     id: 1,
+//     title: "Understanding React Server Components",
+//     description:
+//       "React Server Components let you build modern user interfaces while keeping performance in mind...",
+//     image: "/blog1.jpg",
+//   },
+//   {
+//     id: 2,
+//     title: "Mastering Tailwind CSS",
+//     description:
+//       "Tailwind CSS provides utility-first classes that enable fast and consistent styling across your web apps...",
+//     image: "/blog2.jpg",
+//   },
+//   // Add more dummy blogs here
+// ];
 
 const BlogList = () => {
   const { blogs, loading } = useSelector((state) => state.blogData);
   const dispatch = useDispatch();
 
   const handleUpdate = async (blog) => {
-    dispatch(openModal({modalName: "updateBlog", data: blog}));
+    dispatch(openModal({ modalName: "updateBlog", data: blog }));
   };
 
   const handleDelete = async (id) => {
-    dispatch(openModal({modalName: "deleteBlog", data: id}));
+    dispatch(openModal({ modalName: "deleteBlog", data: id }));
   };
 
   useEffect(() => {
@@ -45,7 +50,7 @@ const BlogList = () => {
       }
     };
     getBlogs();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-950 rounded-2xl text-white p-6">
@@ -58,11 +63,14 @@ const BlogList = () => {
             className="bg-gray-900 border border-white/10 p-4 rounded-xl flex flex-col md:flex-row gap-4 items-start"
           >
             {/* Image */}
-            <img
-              src={blog?.img}
-              alt={blog?.title}
-              className="w-full md:w-48 h-32 object-cover rounded-lg border border-white/10"
-            />
+            <div className="relative w-full md:w-48 h-32">
+              <Image
+                src={blog?.img}
+                alt={blog?.title}
+                fill
+                className="object-cover rounded-lg border border-white/10"
+              />
+            </div>
 
             {/* Content */}
             <div className="flex-1">
