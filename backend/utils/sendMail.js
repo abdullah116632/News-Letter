@@ -1,9 +1,6 @@
 import nodemailer from "nodemailer";
 import { createOtpMailHtml, createSignupMailHtml, createSubscriptionMailHtml } from "./mailHtml.js";
 
-
-console.log(process.env.MAIL_USERNAME);
-
 const transporter = nodemailer.createTransport({
   service: process.env.MAIL_SERVICE,
   auth: {

@@ -7,7 +7,7 @@ import { FaUserPlus } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-const SignupModal = ({ onClose, onSwitchToLogin }) => {
+const SignupModal = ({ onClose }) => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.userData);
 

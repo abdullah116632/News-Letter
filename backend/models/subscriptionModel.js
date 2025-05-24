@@ -10,6 +10,12 @@ const subscriptionSchema = new mongoose.Schema(
       enum: ["Pending", "Success", "Failed"],
       default: "Pending",
     },
+    startingDate: {
+      type: Date,
+    },
+    endingDate: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

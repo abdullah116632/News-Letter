@@ -43,7 +43,7 @@ const UserReviewPage = async () => {
               <div className="absolute left-1/2 -translate-x-1/2 -top-9 rounded-full">
                 <div className="w-[70px] h-[70px] rounded-full overflow-hidden shadow-md">
                   <Image
-                    src={item?.user.img}
+                    src={item?.user?.img}
                     alt="commenter img"
                     width={70}
                     height={70}
@@ -66,7 +66,7 @@ const UserReviewPage = async () => {
                   <StarRatings rating={4} />
                 </div>
                 <p className="h-64 mb-2 sm:mb-5 overflow-y-scroll text-center hide-scrollbar">
-                  {item.comment}
+                  {item?.comment}
                 </p>
               </div>
             </div>

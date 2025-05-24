@@ -17,7 +17,7 @@ const profileCard = ({profileData}) => {
         <div className="flex flex-col lg:flex-row gap-5 pr-12 pt-2.5 lg:border-r-2 w-full lg:w-1/2">
           <div className="flex flex-col items-center text-center md:text-left">
             <Image
-              src={profileData.img}
+              src={profileData?.img}
               alt="Profile Picture"
               width={200}
               height={250}
@@ -26,40 +26,40 @@ const profileCard = ({profileData}) => {
           </div>
           <div className="w-full lg:w-2/3">
             <h2 className="text-2xl md:text-3xl font-bold mt-4">
-              {profileData.fullName}
+              {profileData?.fullName}
             </h2>
             <p className="text-sm my-2">
-              {profileData.profession}
+              {profileData?.profession}
             </p>
             <div className="mt-2 text-sm">
               <p className="flex">
                 <span className="min-w-36">Email</span>
                 <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                  : {profileData.email}
+                  : {profileData?.email}
                 </span>
               </p>
               <p className="flex">
                 <span className="min-w-36">Active Package</span>
                 <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                  : {profileData.activePackage}
+                  : {profileData?.activePackage}
                 </span>
               </p>
               <p className="flex">
                 <span className="min-w-36">Starting Date</span>
                 <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                  : {profileData.startingDate}
+                  : {profileData?.startingDate}
                 </span>
               </p>
               <p className="flex">
                 <span className="min-w-36">Ending Date</span>
                 <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                  : {profileData.endingDate}
+                  : {profileData?.endingDate}
                 </span>
               </p>
               <p className="flex">
                 <span className="min-w-36">Payment Method</span>
                 <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                  : {profileData.paymentMethod}
+                  : {profileData?.paymentMethod}
                 </span>
               </p>
             </div>
@@ -71,7 +71,7 @@ const profileCard = ({profileData}) => {
             <div className="flex">
               <span className="min-w-56">Occupation</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : <span className="text-gray-300">{profileData.occupation}</span>
+                : <span className="text-gray-300">{profileData?.occupation}</span>
               </span>
             </div>
             <div className="flex">
@@ -79,50 +79,50 @@ const profileCard = ({profileData}) => {
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
                 :{" "}
                 <span className="text-gray-300">
-                  {profileData.institution}
+                  {profileData?.institution}
                 </span>
               </span>
             </div>
             <div className="flex">
               <span className="min-w-56">Field of Study / Major</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : <span className="text-gray-300">{profileData.fieldOfStudy}</span>
+                : <span className="text-gray-300">{profileData?.fieldOfStudy}</span>
               </span>
             </div>
             <div className="flex">
               <span className="min-w-56">Subject of Interest</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : <span className="text-gray-300">{profileData.interest}</span>
+                : <span className="text-gray-300">{profileData?.interest}</span>
               </span>
             </div>
             <div className="flex">
               <span className="min-w-56">Prior Research Experience</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : <span className="text-gray-300">{profileData.priorResearchExperience}</span>
+                : <span className="text-gray-300">{profileData?.priorResearchExperience}</span>
               </span>
             </div>
             <div className="flex">
               <span className="min-w-56">English Proficiency</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : <span className="text-gray-300">{profileData.englishProficiency}</span>
+                : <span className="text-gray-300">{profileData?.englishProficiency}</span>
               </span>
             </div>
             <div className="flex">
               <span className="min-w-56">Preferred Degree</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : <span className="text-gray-300">{profileData.preferredDegree}</span>
+                : <span className="text-gray-300">{profileData?.preferredDegree}</span>
               </span>
             </div>
             <div className="flex">
               <span className="min-w-56">Country Preference</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : <span className="text-gray-300">{profileData.countrypreference}</span>
+                : <span className="text-gray-300">{profileData?.countrypreference}</span>
               </span>
             </div>
             <div className="flex">
               <span className="min-w-56">Internship/Job Preference</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : <span className="text-gray-300">{profileData.internshipJobPreferences}</span>
+                : <span className="text-gray-300">{profileData?.internshipJobPreferences}</span>
               </span>
             </div>
             <div className="flex">
@@ -130,7 +130,7 @@ const profileCard = ({profileData}) => {
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
                 :{" "}
                 <span className="text-gray-300">
-                  {profileData.preferredFieldsofOpportunity}
+                  {profileData?.preferredFieldsofOpportunity}
                 </span>
               </span>
             </div>

@@ -55,12 +55,6 @@ const userSchema = new mongoose.Schema(
     activePackage: {
       type: String,
     },
-    startingDate: {
-      type: String,
-    },
-    endingDate: {
-      type: String,
-    },
     paymentMethod: {
       type: String,
     },

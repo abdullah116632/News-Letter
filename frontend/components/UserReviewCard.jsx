@@ -9,7 +9,7 @@ const UserReviewCard = ({ review }) => {
         <div className="absolute left-1/2 -translate-x-1/2 -top-9 rounded-full">
           <div className="w-[70px] h-[70px] rounded-full overflow-hidden shadow-md">
             <Image
-              src={review?.user.img}
+              src={review?.user?.img}
               alt="commenter img"
               width={70}
               height={70}

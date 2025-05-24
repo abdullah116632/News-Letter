@@ -54,6 +54,10 @@ export const signup = async (req, res, next) => {
     await newUser.save();
     generateTokenAndSetToken(newUser._id, res);
 
+    console.log(newUser)
+
+    await sendEmail("signup", {user:newUser});
+
     const userResponse = newUser.toObject();
     delete userResponse.password;
     delete userResponse.confirmPassword;
@@ -224,7 +228,7 @@ export const verifyOtp = async (req, res, next) => {
 export const resetPassword = async (req, res, next) => {
   try {
     const { email, otp, newPassword, confirmPassword } = req.body;
-    
+
     if (!email || !otp || !newPassword || !confirmPassword) {
       return next(new CustomError(400, "All fields are required"));
     }
