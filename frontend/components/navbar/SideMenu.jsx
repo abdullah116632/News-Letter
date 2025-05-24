@@ -1,8 +1,11 @@
-
+import { openModal } from "@/redux/slices/modalSlice";
+import Link from "next/link";
 import { RxCross2 } from "react-icons/rx";
+import { useDispatch, useSelector } from "react-redux";
 
 const SideMenu = ({ isMenuOpen, setIsMenuOpen }) => {
-
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.userData);
 
   return (
     <>
@@ -22,19 +25,37 @@ const SideMenu = ({ isMenuOpen, setIsMenuOpen }) => {
 
         {/* Menu Items */}
         <ul className="mt-16 p-4 space-y-4 text-white hover:bg-amber-700">
-          <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer" >
-            Home
-          </li>
-          <li className="p-2 md:hidden hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer" >
-            Review
-          </li>
-          <li className="p-2 md:hidden hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer" >
-            Blogs
-          </li>
-          <li className="p-2 md:hidden hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer" onClick={()=> console.log("clicked")} >
-            About us
-          </li>
-          <li className="p-2 md:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer" >
+          {user?.isAdmin && (
+            <Link href="/admin">
+              <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer">
+                Admin
+              </li>
+            </Link>
+          )}
+          <Link href="/">
+            <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer">
+              Home
+            </li>
+          </Link>
+          <Link href="/review">
+            <li className="p-2 md:hidden hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer">
+              Review
+            </li>
+          </Link>
+          <Link href="/blogs">
+            <li className="p-2 md:hidden hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer">
+              Blogs
+            </li>
+          </Link>
+          <Link href="/about">
+            <li className="p-2 md:hidden hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer">
+              About us
+            </li>
+          </Link>
+          <li
+            className="p-2 md:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer"
+            onClick={() => dispatch(openModal({ modalName: "logout" }))}
+          >
             Logout
           </li>
         </ul>

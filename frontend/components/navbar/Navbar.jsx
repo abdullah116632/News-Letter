@@ -7,7 +7,6 @@ const Navbar = () => {
   return (
     <nav className=" relative z-20 lg:z-10">
       <BlurCircle
-        position="fixed"
         top="top-[-7.5rem]"
         left="left-[-7.5rem]"
         className="hidden md:block"

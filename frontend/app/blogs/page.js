@@ -16,6 +16,7 @@ const BlogPage = async () => {
     redirect("/");
   }
 
+
   return (
     <div className="relative px-4 sm:px-8 md:px-14 py-10">
       {/* Heading */}
