@@ -5,7 +5,6 @@ import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import compareString from "../utils/conpareString.js";
 
 export const signup = async (req, res, next) => {
-  console.log("request come");
   try {
     const { fullName, email, password, confirmPassword } = req.body;
 

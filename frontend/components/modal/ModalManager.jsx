@@ -7,6 +7,7 @@ import UpdateBlogModal from "./UpdateBlogModal";
 import DeleteBlogModal from "./deleteBlogModal";
 import DeleteReviewModal from "./reviewDeleteModal";
 import UpdatePasswordModal from "./updatePasswordModal";
+import UpdateUserModal from "../profileRoute/UpdateUserModal";
 
 const ModalManager = () => {
   const { modalName, isOpen, data } = useSelector((state) => state.modal);
@@ -20,7 +21,7 @@ const ModalManager = () => {
     case "signup":
       return <SignupModal onClose={handleClose} />;
     case "login":
-        return <LoginModal onClose={handleClose} />;
+      return <LoginModal onClose={handleClose} />;
     case "logout":
       return <LogoutModal onClose={handleClose} />;
     case "updateBlog":
@@ -30,7 +31,9 @@ const ModalManager = () => {
     case "deleteReview":
       return <DeleteReviewModal onClose={handleClose} reviewId={data} />;
     case "updatePassword":
-      return <UpdatePasswordModal onClose={handleClose} />
+      return <UpdatePasswordModal onClose={handleClose} />;
+    case "updateProfile":
+      return <UpdateUserModal onClose={handleClose} />;
     default:
       return null;
   }

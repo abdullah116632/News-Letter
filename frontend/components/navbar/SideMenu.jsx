@@ -1,10 +1,8 @@
-import { openModal } from "@/redux/slices/modalSlice";
 import Link from "next/link";
 import { RxCross2 } from "react-icons/rx";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const SideMenu = ({ isMenuOpen, setIsMenuOpen }) => {
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userData);
 
   return (
@@ -52,12 +50,6 @@ const SideMenu = ({ isMenuOpen, setIsMenuOpen }) => {
               About us
             </li>
           </Link>
-          <li
-            className="p-2 md:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer"
-            onClick={() => dispatch(openModal({ modalName: "logout" }))}
-          >
-            Logout
-          </li>
         </ul>
       </div>
 
