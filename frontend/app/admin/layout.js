@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import { LayoutDashboard, FileText, MessageSquare } from 'lucide-react';
+import { FaUsers } from "react-icons/fa";
 
 export default function AdminLayout({ children }) {
   return (
@@ -34,10 +35,11 @@ export default function AdminLayout({ children }) {
             Manage Reviews
           </Link>
           <Link
-            href="/admin/user/all"
+            href="/admin/users/all"
             className="flex items-center gap-3 text-lg hover:text-amber-400 transition"
           >
-            <MessageSquare size={20} />
+            <FaUsers size={30} />
+
             Users
           </Link>
         </nav>

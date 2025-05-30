@@ -187,3 +187,44 @@ export const getSubscribedUsers = async (req, res, next) => {
 };
 
 
+export const updateAdminAccess = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    // Prevent self-admin status change
+    if (req.user._id.toString() === userId) {
+      return res.status(403).json({ message: "You cannot change your own admin access" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Prevent removing admin from the last admin
+    if (user.isAdmin) {
+      const adminCount = await User.countDocuments({ isAdmin: true });
+      if (adminCount === 1) {
+        return res.status(400).json({
+          message: "At least one admin must exist. You cannot remove admin access from the last admin.",
+        });
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { isAdmin: !user.isAdmin },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: `Admin access ${updatedUser.isAdmin ? "granted" : "removed"} successfully.`,
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating admin access:", error);
+    next(error)
+  }
+};
+
+
+
+

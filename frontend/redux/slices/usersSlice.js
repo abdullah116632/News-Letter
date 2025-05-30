@@ -6,9 +6,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 export const getAllUsers = createAsyncThunk(
   "user/getAllUsers",
   async (page, thunkAPI) => {
+    console.log("page", page)
     try {
-      const response = await api.get(`/user/all/all?${page}`);
-      console.log(response.data.data)
+      const response = await api.get(`/user/all/all?page=${page}`);
+      console.log(response.data)
       return response.data.data.users;
     } catch (error) {
       const message = error.response?.data?.message || error.message || "Failed to fetch users";
@@ -20,9 +21,9 @@ export const getAllUsers = createAsyncThunk(
 // Fetch subscribed users
 export const getSubscribedUsers = createAsyncThunk(
   "user/getSubscribedUsers",
-  async (page = 1, thunkAPI) => {
+  async (page, thunkAPI) => {
     try {
-      const response = await api.get(`/user/subscribed/all?${page}`);
+      const response = await api.get(`/user/subscribed/all?page=${page}`);
       return response.data.data.users;
     } catch (error) {
       const message = error.response?.data?.message || error.message || "Failed to fetch subscribed users";
@@ -30,6 +31,22 @@ export const getSubscribedUsers = createAsyncThunk(
     }
   }
 );
+
+export const updateUserAdminStatus = createAsyncThunk(
+  "user/updateAdminStatus",
+  async ({ userId }, thunkAPI) => {
+    try {
+      const response = await api.put(`/user/admin-access/${userId}`, {}, {
+        headers: {"Content-Type": "application/json"}
+      });
+      return response.data.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message || "Failed to update admin status";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 
 
 

@@ -11,6 +11,7 @@ import UpdateUserModal from "../profileRoute/UpdateUserModal";
 import ForgetPasswordModal from "./ForgetPasswordModal";
 import VerifyOtpModal from "./VerifyOtpModal";
 import ResetPasswordModal from "./ResetPasswordModal";
+import AdminAccessModal from "./AdminAccessModal";
 
 const ModalManager = () => {
   const { modalName, isOpen, data } = useSelector((state) => state.modal);
@@ -43,6 +44,8 @@ const ModalManager = () => {
       return <VerifyOtpModal onClose={handleClose} email={data} />;
     case "resetPassword":
       return <ResetPasswordModal onClose={handleClose} data={data} />;
+    case "giveAdminAccess":
+      return <AdminAccessModal user={data} onClose={handleClose} />;
 
     default:
       return null;

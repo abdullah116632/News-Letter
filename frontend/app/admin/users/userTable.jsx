@@ -4,10 +4,10 @@ import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { FaCheckCircle, FaTimesCircle, FaCopy } from "react-icons/fa";
 import { getAllUsers, getSubscribedUsers } from "@/redux/slices/usersSlice";
+import { openModal } from "@/redux/slices/modalSlice";
 
 const UserTable = () => {
   const pathname = usePathname();
-  console.log(pathname)
   const dispatch = useDispatch();
   const [copiedEmail, setCopiedEmail] = useState(null);
   const [page, setPage] = useState(1);
@@ -17,7 +17,7 @@ const UserTable = () => {
 
   // Fetch users based on route and page
   useEffect(() => {
-    if (pathname === "/admin/user/subscriber") {
+    if (pathname === "/admin/users/subscriber") {
       dispatch(getSubscribedUsers(page));
     } else {
       dispatch(getAllUsers(page));
@@ -96,40 +96,42 @@ const UserTable = () => {
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={user._id} className="hover:bg-gray-800 transition-all">
+            <tr key={user?._id} className="hover:bg-gray-800 transition-all">
               <td className="p-4 border-b border-white/10">{index + 1}</td>
               <td className="p-4 border-b border-white/10">
                 <img
-                  src={user.img}
+                  src={user?.img || "/images/userprofile.png"}
                   alt="User"
                   className="w-10 h-10 rounded-full object-cover border border-white/10"
                 />
               </td>
-              <td className="p-4 border-b border-white/10">{user.fullName}</td>
+              <td className="p-4 border-b border-white/10">{user?.fullName}</td>
               <td className="relative p-4 border-b border-white/10 flex items-center justify-between gap-2">
-                <span className="truncate max-w-[160px]">{user.email}</span>
+                <span className="truncate max-w-[160px] p-4">
+                  {user?.email}
+                </span>
                 <button
-                  onClick={() => handleCopy(user.email)}
+                  onClick={() => handleCopy(user?.email)}
                   title="Copy Email"
                   className="text-gray-400 hover:text-white cursor-pointer pr-8 lg:pr-12"
                 >
                   <FaCopy />
                 </button>
-                {copiedEmail === user.email && (
+                {copiedEmail === user?.email && (
                   <span className="absolute right-0 text-green-400 text-sm ml-1">
                     Copied!
                   </span>
                 )}
               </td>
-              <td className="p-4 border-b border-white/10">
-                {user.isAdmin ? (
-                  <FaCheckCircle className="text-green-400 text-lg" />
+              <td className="p-4 border-b border-white/10" >
+                {user?.isAdmin ? (
+                  <FaCheckCircle className="text-green-400 text-lg cursor-pointer" onClick={() => dispatch(openModal({modalName: "giveAdminAccess", data: user}))} />
                 ) : (
-                  <FaTimesCircle className="text-red-500 text-lg" />
+                  <FaTimesCircle className="text-red-500 text-lg cursor-pointer" onClick={() => dispatch(openModal({modalName: "giveAdminAccess", data: user}))} />
                 )}
               </td>
               <td className="p-4 border-b border-white/10">
-                {user.isSubscribed ? (
+                {user?.isSubscribed ? (
                   <FaCheckCircle className="text-green-400 text-lg" />
                 ) : (
                   <FaTimesCircle className="text-red-500 text-lg" />
