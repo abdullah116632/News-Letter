@@ -35,12 +35,12 @@ const ReviewList = () => {
             {/* Reviewer Info */}
             <div className="flex items-center gap-3 w-10 h-10 rounded-full">
               <img
-                src={review?.user.img || "/default-avatar.png"}
-                alt={review?.user.fullName || "User"}
+                src={review?.user?.img || "/default-avatar.png"}
+                alt={review?.user?.fullName || "User"}
                 className="w-10 h-10 rounded-full object-cover border border-white/20"
               />
               <span className="text-sm font-medium text-white">
-                {review?.user.fullName || "Anonymous"}
+                {review?.user?.fullName || "Anonymous"}
               </span>
             </div>
 
@@ -58,12 +58,12 @@ const ReviewList = () => {
                 />
               ))}
               <span className="ml-2 text-sm text-gray-400">
-                ({review.rating})
+                ({review?.rating})
               </span>
             </div>
 
             {/* Comment */}
-            <p className="text-sm text-gray-300">{review.comment}</p>
+            <p className="text-sm text-gray-300">{review?.comment}</p>
 
             {/* Action */}
             <div className="flex justify-end">

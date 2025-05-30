@@ -3,12 +3,12 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import {  openModal } from "@/redux/slices/modalSlice";
-import { forgotPassword, verifyOtp, resetPassword } from "@/redux/slices/userSlice";
+import { forgotPassword } from "@/redux/slices/authSlice";
 import { toast } from "react-toastify";
 
 const ForgetPasswordModal = ({onClose}) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.userData);
+  const { loading } = useSelector((state) => state.authData);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 

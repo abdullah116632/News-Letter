@@ -33,6 +33,13 @@ export default function AdminLayout({ children }) {
             <MessageSquare size={20} />
             Manage Reviews
           </Link>
+          <Link
+            href="/admin/user/all"
+            className="flex items-center gap-3 text-lg hover:text-amber-400 transition"
+          >
+            <MessageSquare size={20} />
+            Users
+          </Link>
         </nav>
       </aside>
 

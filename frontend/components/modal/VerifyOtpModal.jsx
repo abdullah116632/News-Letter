@@ -3,12 +3,12 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { closeModal, openModal } from "@/redux/slices/modalSlice";
-import { verifyOtp } from "@/redux/slices/userSlice";
+import { verifyOtp } from "@/redux/slices/authSlice";
 import { toast } from "react-toastify";
 
 const VerifyOtpModal = ({onClose, email}) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.userData);
+  const { loading } = useSelector((state) => state.authData);
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
 

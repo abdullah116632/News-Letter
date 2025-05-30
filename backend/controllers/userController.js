@@ -110,3 +110,80 @@ export const updateProfile = async (req, res, next) => {
   }
 };
 
+export const getAllUser = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+
+    const totalUsers = await User.countDocuments();
+    const totalPages = Math.ceil(totalUsers / limit);
+
+
+    if (page > totalPages && totalUsers > 0) {
+      return next(new CustomError(404, `Page ${page} does not exist. Only ${totalPages} page(s) available.`));
+    }
+
+    const users = await User.find({})
+      .select("img fullName email isSubscribed isAdmin")
+      .skip(skip)
+      .limit(limit);
+
+
+    if (users.length === 0 && totalUsers === 0) {
+      return next(new CustomError(404, "No users found in the database."));
+    }
+
+    res.status(200).json({
+      success: true,
+      currentPage: page,
+      totalPages,
+      totalUsers,
+      data: {
+        users,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+export const getSubscribedUsers = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+
+    const totalSubscribed = await User.countDocuments({ isSubscribed: true });
+    const totalPages = Math.ceil(totalSubscribed / limit);
+
+    if (totalSubscribed === 0) {
+      return next(new CustomError(404, "No subscribed users found."));
+    }
+
+    if (page > totalPages) {
+      return next(new CustomError(404, `Page ${page} does not exist. Only ${totalPages} page(s) available.`));
+    }
+
+    const users = await User.find({ isSubscribed: true })
+      .select("img fullName email isSubscribed isAdmin")
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      currentPage: page,
+      totalPages,
+      totalSubscribed,
+      data: {
+        users,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+

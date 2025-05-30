@@ -4,7 +4,7 @@ import { RxCross2 } from "react-icons/rx";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { logoutUser } from "@/redux/slices/userSlice";
+import { logoutUser } from "@/redux/slices/authSlice";
 
 const LogoutModal = ({ onClose }) => {
   const dispatch = useDispatch();

@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
-import { closeModal, openModal } from "@/redux/slices/modalSlice";
-import { loginUser } from "@/redux/slices/userSlice";
+import { openModal } from "@/redux/slices/modalSlice";
+import { loginUser } from "@/redux/slices/authSlice";
 import { toast } from "react-toastify";
 
 const LoginModal = ({ onClose }) => {
-  const { loading } = useSelector((state) => state.userData);
+  const { loading } = useSelector((state) => state.authData);
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({

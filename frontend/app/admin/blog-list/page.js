@@ -30,7 +30,7 @@ import { toast } from "react-toastify";
 // ];
 
 const BlogList = () => {
-  const { blogs, loading } = useSelector((state) => state.blogData);
+  const { blogs } = useSelector((state) => state.blogData);
   const dispatch = useDispatch();
 
   const handleUpdate = async (blog) => {

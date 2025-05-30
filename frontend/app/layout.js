@@ -2,7 +2,7 @@ import { DM_Sans, Roboto } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
-import Footer from "@/components/Footer";
+import Footer from "@/components/footer/Footer";
 import ReduxProvider from "./providers";
 import ToastProvider from "@/components/helper/ToastProvider";
 

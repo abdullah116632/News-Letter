@@ -1,7 +1,7 @@
 "use client";
 
 import { openModal } from "@/redux/slices/modalSlice";
-import { signupUser } from "@/redux/slices/userSlice";
+import { signupUser } from "@/redux/slices/authSlice";
 import { useState, useRef, useEffect } from "react";
 import { FaUserPlus } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 
 const SignupModal = ({ onClose }) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.userData);
+  const { loading } = useSelector((state) => state.authData);
 
   const [formData, setFormData] = useState({
     fullName: "",

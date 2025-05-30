@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { LogIn } from "lucide-react";
 import BlurCircle from "./helper/BlurCircle";
 import Option from "./Option";
 
@@ -23,12 +22,12 @@ const HomePage = () => {
             <h1 className="text-3xl md:text-6xl w-full xl:w-1/2 font-semibold bg-gradient-to-b from-[#BF34CC] to-[#4015FF] bg-clip-text text-transparent">
               THE ALL IN ONE OPPORTUNITY <br /> HUB
             </h1>
-            <div className="flex-grow flex justify-start items-end">
+            {/* <div className="flex-grow flex justify-start items-end">
               <button className=" flex items-center gap-2 mt-5 bg-gradient-to-b from-[#292F6E] to-[#B400CF] rounded-2xl px-2 py-1.5 border-[1px] border-[#F6E8E8] shadow-[0px_4px_43.7px_-1px_rgba(255,255,255,0.25)] hover:shadow-[0_0_25px_rgba(180,0,207,0.5)] hover:scale-105 transition-all duration-300 font-roboto font-semibold cursor-pointer">
                 <LogIn className="w-5 h-5" />
                 LOGIN
               </button>
-            </div>
+            </div> */}
           </div>
           <h2 className="w-[95%] md:w-[80%] text-justify">
             We are Bangladesh’s first dedicated <span className="text-[#BA43FF]">email newsletter</span> agency focused

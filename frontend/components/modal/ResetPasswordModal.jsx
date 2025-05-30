@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
-import { resetPassword } from "@/redux/slices/userSlice";
+import { resetPassword } from "@/redux/slices/authSlice";
 import { toast } from "react-toastify";
 
 const ResetPasswordModal = ({onClose, data}) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.userData);
+  const { loading } = useSelector((state) => state.authData);
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",

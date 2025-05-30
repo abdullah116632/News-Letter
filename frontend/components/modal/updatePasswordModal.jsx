@@ -4,10 +4,10 @@ import { RxCross2 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "@/redux/slices/modalSlice";
 import { toast } from "react-toastify";
-import { updatePassword } from "@/redux/slices/userSlice";
+import { updatePassword } from "@/redux/slices/authSlice";
 
 const UpdatePasswordModal = ({ onClose }) => {
-  const { loading } = useSelector((state) => state.userData);
+  const { loading } = useSelector((state) => state.authData);
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -71,7 +71,7 @@ const UpdatePasswordModal = ({ onClose }) => {
       <div className="bg-gradient-to-br from-white/90 via-blue-100 to-purple-100 border border-gray-200 w-full max-w-md mx-4 p-6 rounded-2xl relative text-black backdrop-blur shadow-lg">
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-black"
+          className="absolute top-4 right-4 text-gray-500 hover:text-black cursor-pointer"
           onClick={() => dispatch(onClose())}
         >
           <RxCross2 size={20} />

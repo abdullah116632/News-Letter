@@ -5,7 +5,7 @@ import { openModal } from "@/redux/slices/modalSlice";
 
 const UserOption = ({ setUserOptionOpen }) => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.userData);
+  const { user } = useSelector((state) => state.authData);
 
 
   return (

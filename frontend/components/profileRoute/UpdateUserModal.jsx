@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { updateUserProfile } from "@/redux/slices/userSlice";
+import { updateUserProfile } from "@/redux/slices/authSlice";
 
 const UpdateUserModal = ({ onClose }) => {
   const dispatch = useDispatch();
-  const {user} = useSelector(state => state.userData);
+  const {user} = useSelector(state => state.authData);
   const fileInputRef = useRef();
 
   const [formData, setFormData] = useState({

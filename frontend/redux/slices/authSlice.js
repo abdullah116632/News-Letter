@@ -1,4 +1,3 @@
-// src/features/user/userSlice.js
 import api from "@/lib/client-axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -124,7 +123,7 @@ const initialState = {
   error: null,
 };
 
-const userSlice = createSlice({
+const authSlice = createSlice({
   name: "userData",
   initialState,
   reducers: {
@@ -181,6 +180,7 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
+      //update password
       .addCase(updatePassword.pending, (state) => {
         state.loading = true;
       })
@@ -192,6 +192,7 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
+      //update profile
       .addCase(updateUserProfile.pending, (state) => {
         state.loading = true;
       })
@@ -246,4 +247,4 @@ const userSlice = createSlice({
 });
 
 
-export default userSlice.reducer;
+export default authSlice.reducer;

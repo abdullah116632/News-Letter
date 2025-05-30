@@ -1,13 +1,10 @@
 "use client"
 
 import { RiPencilLine } from "react-icons/ri";
-import UpdateProfileForm from "./UpdateUserModal";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { openModal } from "@/redux/slices/modalSlice";
 
 const UpdatePopUpButton = () => {
-    const [isUpdateFromOpen, setIsUpdateFormOpen] = useState(false);
     const dispatch = useDispatch();
 
   return (

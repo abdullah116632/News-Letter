@@ -3,7 +3,7 @@ import { RxCross2 } from "react-icons/rx";
 import { useSelector } from "react-redux";
 
 const SideMenu = ({ isMenuOpen, setIsMenuOpen }) => {
-  const { user } = useSelector((state) => state.userData);
+  const { user } = useSelector((state) => state.authData);
 
   return (
     <>
