@@ -1,6 +1,10 @@
 "use client";
 
+import { openModal } from "@/redux/slices/modalSlice";
+import { fetchSubscription } from "@/redux/slices/subscriptionSlice";
 import axios from "axios";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const PricingCard = ({
@@ -11,27 +15,66 @@ const PricingCard = ({
   features,
   price,
 }) => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.authData);
+
   const subscribe = async () => {
+    console.log(title)
     try {
-      console.log("working subscribe");
+      if (!user) {
+        dispatch(openModal({ modalName: "login" }));
+        return;
+      }
+
+      let serviceType;
+
+      switch (title) {
+        case "ScholarTrack.":
+          serviceType = "ScholarTrack";
+          break;
+        case "CareerCatch.":
+          serviceType = "CareerCatch";
+          break;
+        case "OpT. All-Access":
+          serviceType = "All-Access";
+          break;
+        default:
+          serviceType = "Unknown";
+      }
+
       const { data } = await axios.post(
-        process.env.NEXT_PUBLIC_API_BASE_URL + "/payment/",
-        { price },
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment/subscribe`,
+        { price, serviceType },
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
 
-      if(data.success){
-        console.log(data);
+      if (data.data) {
+        console.log("working", data.data.subscription);
+        dispatch(
+          openModal({
+            modalName: "subscribedata",
+            data: {subscriptionData :data.data.subscription, serviceType, price}
+          })
+        );
+      }
+
+      // console.log(data);
+
+      if (data.success) {
         window.location.replace(data.url);
       }
     } catch (err) {
-      console.log(err);
-      toast.error(err.message);
+      console.error("Subscription Error:", err);
+      toast.error(err?.response?.data?.message || err.message);
     }
   };
+
+  useEffect(() => {
+    dispatch(fetchSubscription());
+  }, [dispatch]);
 
   return (
     <div className="w-full xl:w-[25vw] font-bold border-3 border-white shadow-[0_0_25px_rgba(0,238,255,0.3)] bg-[#5555555E] rounded-3xl pl-3 md:pl-2 lg:pl-3 xl:pl-5 pr-0.5 hover:border-[#00EEFF] hover:shadow-[0_0_25px_rgba(0,238,255,0.3)] hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden">

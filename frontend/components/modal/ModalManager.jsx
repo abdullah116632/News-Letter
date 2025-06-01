@@ -12,9 +12,11 @@ import ForgetPasswordModal from "./ForgetPasswordModal";
 import VerifyOtpModal from "./VerifyOtpModal";
 import ResetPasswordModal from "./ResetPasswordModal";
 import AdminAccessModal from "./AdminAccessModal";
+import SubscriptionDataModal from "./SubscriptionDataModal";
 
 const ModalManager = () => {
   const { modalName, isOpen, data } = useSelector((state) => state.modal);
+  console.log("modalmaneger",data)
   const dispatch = useDispatch();
 
   if (!isOpen) return null;
@@ -46,6 +48,8 @@ const ModalManager = () => {
       return <ResetPasswordModal onClose={handleClose} data={data} />;
     case "giveAdminAccess":
       return <AdminAccessModal user={data} onClose={handleClose} />;
+    case "subscribedata":
+      return <SubscriptionDataModal data={data} onClose={handleClose} />;
 
     default:
       return null;

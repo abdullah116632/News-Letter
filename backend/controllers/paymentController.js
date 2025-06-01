@@ -1,147 +1,269 @@
-import SSLCommerzPayment from "sslcommerz-lts";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 import Subscription from "../models/subscriptionModel.js";
-import User from "../models/userModel.js"; // Make sure you have this
+import User from "../models/userModel.js";
 import sendEmail from "../utils/sendMail.js";
 
-const store_id = process.env.SSL_STORE_ID;
-const store_passwd = process.env.SSL_STORE_PASSWORD;
-const is_live = process.env.SSL_IS_LIVE === "true";
-
 // INITIATE PAYMENT
-export const payment = async (req, res) => {
-  const { price } = req.body;
+export const subscribe = async (req, res) => {
+  const { price, serviceType } = req.body;
   const { _id, fullName, email } = req.user;
 
-  if (!price || price <= 0) {
-    return res.status(400).json({ success: false, message: "Invalid price" });
+  if (!price || price <= 0 || !serviceType) {
+    return res.status(400).json({ success: false, message: "Invalid input" });
   }
 
-  const tran_id = "TXN_" + uuidv4();
+  const existing = await Subscription.findOne({ user: _id });
+  const now = new Date();
+  if (
+    existing &&
+    existing.status === "Success" &&
+    existing.endingDate &&
+    existing.endingDate > now
+  ) {
+    return res.status(200).json({
+      success: false,
+      message: "Already subscribed",
+      data: { subscription: existing },
+    });
+  }
+
+  const subscriptionId = "SUB_" + uuidv4();
+
+  const options = {
+    method: "POST",
+    url: process.env.UDDOKTAPAY_CHECKOUT_API_URL,
+    headers: {
+      accept: "application/json",
+      "RT-UDDOKTAPAY-API-KEY": process.env.UDDOKTAPAY_API_KEY,
+      "content-type": "application/json",
+    },
+    data: {
+      full_name: fullName,
+      email: email,
+      amount: price.toString(),
+      metadata: {
+        user_id: _id.toString(),
+        subscription_id: subscriptionId,
+        type: "subscribe",
+        serviceType,
+      },
+      redirect_url: `${process.env.BACKEND_URL}/api/payment/success`,
+      return_type: "POST",
+      cancel_url: `${process.env.BACKEND_URL}/api/payment/cancel`,
+      webhook_url: `${process.env.BACKEND_URL}/api/payment/webhook`,
+    },
+  };
 
   try {
-    await Subscription.create({
-      user: _id,
-      tran_id,
-      amount: price,
-      status: "Pending",
+    const response = await axios.request(options);
+    const redirectUrl = response.data.payment_url;
+
+    // Save subscription with status pending
+    await Subscription.findOneAndUpdate(
+      { user: _id },
+      {
+        user: _id,
+        subscriptionId,
+        amount: price,
+        serviceType,
+        status: "Pending",
+        invoice_id: null,
+        startingDate: null,
+        endingDate: null,
+      },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      url: redirectUrl,
     });
-
-    const data = {
-      total_amount: price,
-      currency: "BDT",
-      tran_id,
-
-      success_url: `${process.env.BACKEND_URL}/api/payment/success/${tran_id}`,
-      fail_url: `${process.env.BACKEND_URL}/api/payment/fail/${tran_id}`,
-      cancel_url: `${process.env.BACKEND_URL}/api/payment/cancel/${tran_id}`,
-      ipn_url: `${process.env.BACKEND_URL}/api/payment/ipn/${tran_id}`,
-
-      shipping_method: "NO",
-      product_name: "Newsletter Subscription",
-      product_category: "Digital Service",
-      product_profile: "non-physical-goods",
-
-      cus_name: fullName || "Customer Name",
-      cus_email: email || "customer@example.com",
-      cus_add1: "N/A",
-      cus_add2: "N/A",
-      cus_city: "Dhaka",
-      cus_state: "Dhaka",
-      cus_postcode: "1000",
-      cus_country: "Bangladesh",
-      cus_phone: "N/A",
-      cus_fax: "N/A",
-
-      ship_name: fullName || "Customer Name",
-      ship_add1: "N/A",
-      ship_add2: "N/A",
-      ship_city: "Dhaka",
-      ship_state: "Dhaka",
-      ship_postcode: "1000",
-      ship_country: "Bangladesh",
-    };
-
-    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
-    const apiResponse = await sslcz.init(data);
-    const GatewayPageURL = apiResponse?.GatewayPageURL;
-
-    if (!GatewayPageURL) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to get gateway URL" });
-    }
-
-    res.status(200).json({ success: true, url: GatewayPageURL });
   } catch (err) {
-    console.error("Payment Init Error:", err);
-    res
-      .status(500)
-      .json({ success: false, message: "Payment initialization failed." });
+    console.error("Subscribe Error:", err.message);
+    res.status(500).json({ success: false, message: "Subscription failed" });
+  }
+};
+
+// INITIATE RENEW PAYMENT
+export const renew = async (req, res) => {
+  console.log("request come")
+  const { price, serviceType } = req.body;
+  const { _id, fullName, email } = req.user;
+
+  if (!price || price <= 0 || !serviceType) {
+    return res.status(400).json({ success: false, message: "Invalid input" });
+  }
+
+  const subscription = await Subscription.findOne({ user: _id });
+
+  if (!subscription || subscription.status !== "Success") {
+    return res
+      .status(400)
+      .json({ success: false, message: "No active subscription to renew" });
+  }
+
+  // Use the existing subscriptionId
+  const existingSubscriptionId = subscription.subscriptionId;
+
+  const updatedPrice = Number(subscription.amount) + Number(price);
+
+  const options = {
+    method: "POST",
+    url: process.env.UDDOKTAPAY_CHECKOUT_API_URL,
+    headers: {
+      accept: "application/json",
+      "RT-UDDOKTAPAY-API-KEY": process.env.UDDOKTAPAY_API_KEY,
+      "content-type": "application/json",
+    },
+    data: {
+      full_name: fullName,
+      email: email,
+      amount: price.toString(), // Only the new price is paid now
+      metadata: {
+        user_id: _id.toString(),
+        subscription_id: existingSubscriptionId,
+        type: "renew",
+        serviceType,
+      },
+      redirect_url: `${process.env.BACKEND_URL}/api/payment/success`,
+      return_type: "POST",
+      cancel_url: `${process.env.BACKEND_URL}/api/payment/cancel`,
+      webhook_url: `${process.env.BACKEND_URL}/api/payment/webhook`,
+    },
+  };
+
+  try {
+    const response = await axios.request(options);
+    const redirectUrl = response.data.payment_url;
+
+    // Update status to pending but keep subscriptionId and update total amount
+    // subscription.status = "Pending";
+    subscription.invoice_id = null;
+    subscription.amount = updatedPrice;
+    subscription.serviceType = serviceType;
+    await subscription.save();
+
+    res.status(200).json({
+      success: true,
+      url: redirectUrl,
+    });
+  } catch (err) {
+    console.error("Renew Error:", err.message);
+    res.status(500).json({ success: false, message: "Renewal failed" });
   }
 };
 
 // HANDLE SUCCESS
 export const handleSuccess = async (req, res) => {
-  const { tran_id } = req.params;
+  const invoiceId = req.body.invoice_id;
 
   try {
-    const subscription = await Subscription.findOne({ tran_id }).populate("user");
+    const options = {
+      method: "POST",
+      url: process.env.UDDOKTAPAY_VERIFY_API_URL,
+      headers: {
+        accept: "application/json",
+        "RT-UDDOKTAPAY-API-KEY": process.env.UDDOKTAPAY_API_KEY,
+        "content-type": "application/json",
+      },
+      data: { invoice_id: invoiceId },
+    };
 
-    if (!subscription) {
-      return res.status(404).send("Subscription not found");
+    const response = await axios.request(options);
+    const paymentData = response.data;
+    const userId = paymentData?.metadata?.user_id;
+    const subscriptionType = paymentData?.metadata?.type; // 'subscribe' or 'renew'
+    const serviceType = paymentData?.metadata?.serviceType;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).send("User not found");
+
+    const subscription = await Subscription.findOne({ user: userId });
+    const now = new Date();
+
+    if (subscriptionType === "subscribe") {
+      const newEnd = new Date(now);
+      newEnd.setMonth(now.getMonth() + 1);
+
+      if (subscription) {
+        // Update existing
+        subscription.subscriptionId = paymentData?.metadata?.subscription_id;
+        subscription.status = "Success";
+        subscription.invoice_id = invoiceId;
+        subscription.amount = paymentData.amount;
+        subscription.startingDate = now;
+        subscription.endingDate = newEnd;
+        subscription.serviceType = serviceType;
+
+        await subscription?.save();
+      } else {
+        // Create new
+        await Subscription.create({
+          user: userId,
+          subscriptionId: paymentData?.metadata?.subscription_id,
+          amount: paymentData.amount,
+          invoice_id: invoiceId,
+          status: "Success",
+          startingDate: now,
+          endingDate: newEnd,
+          serviceType,
+        });
+      }
+
+      await User.findByIdAndUpdate(userId, { isSubscribed: true });
     }
 
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 30);
+    if (subscriptionType === "renew") {
+      if (!subscription || subscription.status !== "Success") {
+        return res.status(400).send("No active subscription to renew.");
+      }
 
-    subscription.status = "Success";
-    subscription.startingDate = startDate;
-    subscription.endingDate = endDate;
-    await subscription.save();
+      const currentEnd =
+        subscription.endingDate > now ? subscription.endingDate : now;
+      const newEnd = new Date(currentEnd);
+      newEnd.setMonth(newEnd.getMonth() + 1);
 
-    if (subscription.user) {
-      await User.findByIdAndUpdate(subscription.user, { isSubscribed: true });
-      await sendEmail("subscription", {user: subscription.user, subscription});
-    } else {
-      console.warn(
-        `Subscription with tran_id ${tran_id} has no associated user.`
-      );
-      return res.status(400).send("Invalid subscription: No associated user.");
+      subscription.status = "Success";
+      subscription.invoice_id = invoiceId;
+      subscription.endingDate = newEnd;
+      subscription.serviceType = serviceType;
+
+      await subscription.save();
+      await User.findByIdAndUpdate(userId, { isSubscribed: true });
     }
 
-    res.redirect(
-      `${process.env.FRONTEND_URL}/payment/success?tran_id=${tran_id}`
-    );
+    res.redirect(`${process.env.FRONTEND_URL}/payment/success`);
   } catch (err) {
     console.error("Success Handler Error:", err);
     res.status(500).send("Internal Server Error");
   }
 };
 
-// HANDLE FAIL
-export const handleFail = async (req, res) => {
-  const { tran_id } = req.params;
-
-  try {
-    await Subscription.findOneAndUpdate({ tran_id }, { status: "Failed" });
-    res.redirect(`${process.env.FRONTEND_URL}/payment/fail?tran_id=${tran_id}`);
-  } catch (err) {
-    console.error("Fail Handler Error:", err);
-    res.status(500).send("Internal Server Error");
-  }
-};
-
-// HANDLE CANCEL
 export const handleCancel = async (req, res) => {
-  const { tran_id } = req.params;
-
   try {
-    await Subscription.findOneAndUpdate({ tran_id }, { status: "Cancelled" });
-    res.redirect(
-      `${process.env.FRONTEND_URL}/payment/cancel?tran_id=${tran_id}`
-    );
+    // UddoktaPay sends metadata back during cancellation via POST
+    const { metadata } = req.body;
+
+    if (!metadata || !metadata.subscription_id) {
+      return res.status(400).send("Missing subscription metadata.");
+    }
+
+    const subscriptionId = metadata.subscription_id;
+
+    // Find the subscription using subscriptionId from metadata
+    const subscription = await Subscription.findOne({ subscriptionId });
+
+    if (!subscription) {
+      return res.status(404).send("Subscription not found.");
+    }
+
+    // Update status to 'Failed' or 'Canceled'
+    subscription.status = "Failed";
+    await subscription.save();
+
+    // Redirect user to cancel page or notify cancellation
+    res.redirect(`${process.env.FRONTEND_URL}/payment/cancel`);
   } catch (err) {
     console.error("Cancel Handler Error:", err);
     res.status(500).send("Internal Server Error");
@@ -149,19 +271,70 @@ export const handleCancel = async (req, res) => {
 };
 
 // HANDLE IPN (Instant Payment Notification)
-export const handleInstantPaymentNotification = async (req, res) => {
-  const data = req.body;
-  const tran_id = data.tran_id;
+export const handleWebHook = async (req, res) => {
+  // Get the API key from the request headers
+  const headerApi = req.headers["rt-uddoktapay-api-key"];
 
+  // Verify the API key
+  if (headerApi !== apiKey) {
+    res.status(401).send("Unauthorized Action");
+    return;
+  }
+
+  // Webhook data
+  const webhookData = req.body;
+
+  // Handle the webhook data
+  console.log("Webhook Data Received:");
+  console.log(webhookData);
+
+  // You can now process the data as needed
+
+  res.status(200).send("Webhook received successfully");
+};
+
+export const checkSubscriptionStatus = async (req, res) => {
   try {
-    if (data.status === "VALID") {
-      await Subscription.updateOne({ tran_id }, { status: "Success" });
-    } else {
-      await Subscription.updateOne({ tran_id }, { status: "Failed" });
+    const userId = req.user._id;
+
+    // Get most recent subscription for the user
+    const subscription = await Subscription.findOne({ user: userId });
+
+    if (!subscription) {
+      return res.status(200).json({
+        subscribed: false,
+        message: "User has no active subscription.",
+      });
     }
-    res.status(200).json({ received: true });
-  } catch (err) {
-    console.error("IPN Handler Error:", err);
-    res.status(500).json({ success: false });
+
+    const now = new Date();
+
+    if (
+      subscription.status === "Success" &&
+      subscription.endingDate &&
+      new Date(subscription.endingDate) > now
+    ) {
+      return res.status(200).json({
+        subscribed: true,
+        status: "active",
+        data: {
+          subscription,
+          daysLeft: Math.ceil(
+            (new Date(subscription.endingDate) - now) / (1000 * 60 * 60 * 24)
+          ),
+        },
+      });
+    } else {
+      return res.status(200).json({
+        subscribed: true,
+        status: "expired",
+        data: {
+          subscription,
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error checking subscription:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

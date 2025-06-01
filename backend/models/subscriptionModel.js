@@ -3,8 +3,13 @@ import mongoose from "mongoose";
 const subscriptionSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    tran_id: { type: String, required: true, unique: true },
+    subscriptionId: { type: String, required: true, unique: true },
+    invoice_id: {type: String},
     amount: { type: Number, required: true },
+    serviceType: {
+      type: String,
+      enum: ["ScholarTrack", "CareerCatch", "All-Access"],
+    },
     status: {
       type: String,
       enum: ["Pending", "Success", "Failed"],
@@ -12,6 +17,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     startingDate: {
       type: Date,
+      default: Date.now()
     },
     endingDate: {
       type: Date,

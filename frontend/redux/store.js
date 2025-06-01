@@ -3,7 +3,8 @@ import authReducer from './slices/authSlice';
 import usersReducer from './slices/usersSlice';
 import blogReducer from './slices/blogSlice';
 import modalReducer from "./slices/modalSlice";
-import reviewSlice from "./slices/reviewSlice";
+import reviewReducer from "./slices/reviewSlice";
+import subscriptionReducer from "./slices/subscriptionSlice";
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     usersData: usersReducer,
     blogData: blogReducer,
     modal: modalReducer,
-    reviewData: reviewSlice
+    reviewData: reviewReducer,
+    subscriptionData: subscriptionReducer
   },
 })
