@@ -1,13 +1,12 @@
 "use client";
 
 import { openModal } from "@/redux/slices/modalSlice";
-import { fetchSubscription } from "@/redux/slices/subscriptionSlice";
-import axios from "axios";
-import { useEffect } from "react";
+import { subscribeUser } from "@/redux/slices/subscriptionSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const PricingCard = ({
+  _id,
   title,
   titleColor,
   focus,
@@ -17,63 +16,39 @@ const PricingCard = ({
 }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authData);
+  const { data: activeSubscription, loading } = useSelector(
+    (state) => state.subscriptionData
+  );
 
   const subscribe = async () => {
-    try {
-      if (!user) {
-        dispatch(openModal({ modalName: "login" }));
-        return;
-      }
+    if (!user) {
+      toast.error("Please log in to subscribe.");
+      return;
+    }
 
-      let serviceType;
-
-      switch (title) {
-        case "ScholarTrack.":
-          serviceType = "ScholarTrack";
-          break;
-        case "CareerCatch.":
-          serviceType = "CareerCatch";
-          break;
-        case "OpT. All-Access":
-          serviceType = "All-Access";
-          break;
-        default:
-          serviceType = "Unknown";
-      }
-
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment/subscribe`,
-        { price, serviceType },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
+    if (activeSubscription) {
+      //Already subscribed → show modal to update
+      dispatch(
+        openModal({ modalName: "subscribedata", data: {activeSubscription, clickedServiceId: _id, clickedServicePrice: price}})
       );
-
-      if (data.data) {
-        console.log("working", data.data.subscription);
-        dispatch(
-          openModal({
-            modalName: "subscribedata",
-            data: {subscriptionData :data.data.subscription, serviceType, price}
-          })
+    } else {
+      // No subscription → create new subscription
+      try {
+        const resultAction = await dispatch(
+          subscribeUser({ price, servicePlanId: _id })
         );
-      }
 
-      // console.log(data);
-
-      if (data.success) {
-        window.location.replace(data.url);
+        if (subscribeUser.fulfilled.match(resultAction)) {
+          const paymentUrl = resultAction.payload;
+          window.location.href = paymentUrl;
+        } else {
+          toast.error(resultAction.payload || "Something went wrong.");
+        }
+      } catch (error) {
+        toast.error("Failed to subscribe.");
       }
-    } catch (err) {
-      console.error("Subscription Error:", err);
-      toast.error(err?.response?.data?.message || err.message);
     }
   };
-
-  useEffect(() => {
-    dispatch(fetchSubscription());
-  }, [dispatch]);
 
   return (
     <div className="w-full xl:w-[25vw] font-bold border-3 border-white shadow-[0_0_25px_rgba(0,238,255,0.3)] bg-[#5555555E] rounded-3xl pl-3 md:pl-2 lg:pl-3 xl:pl-5 pr-0.5 hover:border-[#00EEFF] hover:shadow-[0_0_25px_rgba(0,238,255,0.3)] hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden">
@@ -114,6 +89,7 @@ const PricingCard = ({
           <span className="block">Tk. {price}/</span>month
         </p>
         <button
+          disabled={loading}
           className="font-codeProBlackLC font-black border-2 border-white/50 rounded-full text-xl sm:text-2xl md:text-3xl px-2 py-1 sm:px-4 sm:py-3 xl:px-10 xl:py-3 mb-2 xl:mb-4 bg-gradient-to-r from-[#D400B8] to-[#9900FF] hover:from-[#9900FF] hover:to-[#D400B8] hover:shadow-[0_0_15px_rgba(153,0,255,0.5)] hover:scale-105 transition-all duration-300 cursor-pointer"
           onClick={() => subscribe()}
         >

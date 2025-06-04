@@ -1,31 +1,47 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const subscriptionSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    subscriptionId: { type: String, required: true, unique: true },
-    invoice_id: {type: String},
-    amount: { type: Number, required: true },
-    serviceType: {
-      type: String,
-      enum: ["ScholarTrack", "CareerCatch", "All-Access"],
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
-    status: {
-      type: String,
-      enum: ["Pending", "Success", "Failed"],
-      default: "Pending",
+    servicePlan: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ServicePlan',
+      required: true,
     },
     startingDate: {
       type: Date,
-      default: Date.now()
+      required: true,
     },
     endingDate: {
       type: Date,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'active', 'expired'],
+      default: 'pending',
+      required: true
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    paid: {
+      type: Boolean,
+      default: false
+    },
+    invoiceId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
   },
   { timestamps: true }
 );
 
-const Subscription = mongoose.model("Subscription", subscriptionSchema);
-
+const Subscription = mongoose.model('Subscription', subscriptionSchema);
 export default Subscription;

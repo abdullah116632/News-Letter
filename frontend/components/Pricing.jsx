@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import PricingCard from "./PricingCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchServicePlans } from "@/redux/slices/servicePlanSlice";
+import { fetchActiveSubscription } from "@/redux/slices/subscriptionSlice";
 
 const titleColors = {
   "ScholarTrack.": "text-[#FF0000]",
@@ -15,15 +16,12 @@ const titleColors = {
 
 const Pricing = () => {
   const dispatch = useDispatch();
-  const {
-    plans: pricingData,
-    loading,
-    error,
-  } = useSelector((state) => state.servicePlanData);
-  console.log(pricingData);
+  const { plans: pricingData } = useSelector((state) => state.servicePlanData);
+  // const {data} = useSelector(state=>state.subscriptionData);
 
   useEffect(() => {
     dispatch(fetchServicePlans());
+    dispatch(fetchActiveSubscription());
   }, [dispatch]);
 
   return (

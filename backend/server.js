@@ -10,7 +10,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
-import paymentRoutes from "./routes/paymentRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import brevoRoute from "./routes/brevoRoutes.js";
 
 
@@ -36,7 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/blog", blogRoutes);
 app.use("/api/review", reviewRoutes);
-app.use("/api/payment", paymentRoutes);
+app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/brevo", brevoRoute);
 
 

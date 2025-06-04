@@ -1,37 +1,73 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { subscribeUser, updatePackageForFree, updatePackageWithCharge } from "@/redux/slices/subscriptionSlice";
 
 const SubscriptionDataModal = ({ data: modalData, onClose }) => {
-  const { startingDate, endingDate, serviceType:subsCribedService } = modalData.subscriptionData || {};
-  const serviceType = modalData.serviceType;
-  const price = modalData.price;
+  const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState(false);
+  const {_id, startingDate, endingDate, servicePlan, price } = modalData.activeSubscription || {};
+  const clickedServicePrice = modalData.clickedServicePrice;
+  const clickedServiceId = modalData.clickedServiceId;
 
-  const handleRenew = async () => {
-    setLoading(true);
-    try {
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment/renew`,
-        { price, serviceType },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
+  const [loading, setLoading] = useState(false)
 
-      if (data.success) {
-        window.location.replace(data.url);
-      }
-    } catch (err) {
-      toast.error(err?.response?.data?.message || "Renewal failed");
-    } finally {
-      setLoading(false);
+  const handleAddOneMonth = async () => {
+  setLoading(true);
+  try {
+    const result = await dispatch(
+      subscribeUser({ price, servicePlanId: servicePlan._id })
+    ).unwrap();
+
+    if (result) {
+      window.location.replace(result); // result is the URL
     }
-  };
+  } catch (err) {
+    toast.error(err || "Subscription failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleUpdate = async () => {
+  setLoading(true);
+
+  const newPlanId = clickedServiceId;
+  const newPrice = clickedServicePrice;
+
+  const currentPrice = price;
+  const subscriptionId = _id;
+
+  try {
+    if (newPrice === currentPrice || newPrice < currentPrice) {
+      // FREE update
+      await dispatch(
+        updatePackageForFree({ subscriptionId, servicePlanId: newPlanId })
+      ).unwrap();
+
+      toast.success("Package updated successfully for free.");
+    } else {
+      // CHARGED update - use price difference
+      const priceDifference = newPrice - currentPrice;
+
+      const result = await dispatch(
+        updatePackageWithCharge({ price: priceDifference, servicePlanId: newPlanId, subscriptionId })
+      ).unwrap();
+
+      if (result) {
+        window.location.replace(result); // redirect to payment page
+      }
+    }
+  } catch (err) {
+    toast.error(err || "Update failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -48,20 +84,35 @@ const SubscriptionDataModal = ({ data: modalData, onClose }) => {
         <h2 className="text-2xl font-bold text-center mb-4 text-blue-700">
           Subscription Info
         </h2>
+        <p className="text-center text-sm text-gray-800 mb-4">
+          Your Current Active Subscription
+        </p>
 
         {/* Info */}
         <div className="text-gray-800 text-sm space-y-2 mb-4">
           <p>
             <strong>Starting Date:</strong>{" "}
-            {startingDate ? new Date(startingDate).toLocaleDateString() : "N/A"}
+            {startingDate
+              ? new Date(startingDate).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "N/A"}
           </p>
           <p>
             <strong>Ending Date:</strong>{" "}
-            {endingDate ? new Date(endingDate).toLocaleDateString() : "N/A"}
+            {endingDate
+              ? new Date(endingDate).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "N/A"}
           </p>
+
           <p className="border-b border-b-black pb-2">
-            <strong>Subscribed package:</strong>{" "}
-            {subsCribedService}
+            <strong>Subscribed package:</strong> {servicePlan.title}
           </p>
           <p>
             <strong>Selected Package Price:</strong> ${price}
@@ -69,39 +120,74 @@ const SubscriptionDataModal = ({ data: modalData, onClose }) => {
         </div>
 
         {/* Renew Button */}
-        <button
-          onClick={handleRenew}
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white font-semibold py-2 rounded-md hover:opacity-90 transition flex justify-center items-center gap-2 disabled:opacity-70 cursor-pointer"
-        >
-          {loading ? (
-            <>
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                />
-              </svg>
-              Processing...
-            </>
-          ) : (
-            "Renew Package"
-          )}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleAddOneMonth}
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white font-semibold py-2 rounded-md hover:opacity-90 transition flex justify-center items-center gap-2 disabled:opacity-70 cursor-pointer"
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+                Processing...
+              </>
+            ) : (
+              "One month more"
+            )}
+          </button>
+          <button
+            onClick={handleUpdate}
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white font-semibold py-2 rounded-md hover:opacity-90 transition flex justify-center items-center gap-2 disabled:opacity-70 cursor-pointer"
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+                Processing...
+              </>
+            ) : (
+              "Update Package"
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
