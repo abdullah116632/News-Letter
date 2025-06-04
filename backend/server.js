@@ -5,6 +5,7 @@ import cors from "cors"
 import connectToMongoDB from "./db/mongoDbConnection.js";
 import CustomError from "./utils/customErrorClass.js";
 import globalErrorHandler from "./controllers/errorController.js";
+import servicePlanRoutes from "./routes/servicePlanRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
@@ -30,6 +31,7 @@ app.use(express.urlencoded());
 app.use(cookieParser());
 
 
+app.use("/api/service-plans", servicePlanRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/blog", blogRoutes);

@@ -19,7 +19,6 @@ const PricingCard = ({
   const { user } = useSelector((state) => state.authData);
 
   const subscribe = async () => {
-    console.log(title)
     try {
       if (!user) {
         dispatch(openModal({ modalName: "login" }));

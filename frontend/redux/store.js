@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
+import servicePlanReducer from "./slices/servicePlanSlice";
 import usersReducer from './slices/usersSlice';
 import blogReducer from './slices/blogSlice';
 import modalReducer from "./slices/modalSlice";
@@ -10,6 +11,7 @@ import brevoReducer from "./slices/blogSlice";
 export const store = configureStore({
     reducer: {
     authData: authReducer,
+    servicePlanData: servicePlanReducer,
     usersData: usersReducer,
     blogData: blogReducer,
     modal: modalReducer,
