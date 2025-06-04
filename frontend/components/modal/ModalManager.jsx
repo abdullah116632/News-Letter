@@ -16,7 +16,6 @@ import SubscriptionDataModal from "./SubscriptionDataModal";
 
 const ModalManager = () => {
   const { modalName, isOpen, data } = useSelector((state) => state.modal);
-  console.log("modalmaneger",data)
   const dispatch = useDispatch();
 
   if (!isOpen) return null;

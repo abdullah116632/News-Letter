@@ -6,7 +6,9 @@ import { toast } from "react-toastify";
 import {
   updateUserAdminStatus,
   getAllUsers,
-  getSubscribedUsers,
+  getAllSubscribers,
+  getActiveSubscribers,
+  getExpiredSubscribers,
 } from "@/redux/slices/usersSlice";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -30,10 +32,15 @@ const AdminAccessModal = ({ user, onClose, page }) => {
       );
       // Refetch users to update UI
       if (pathname === "/admin/users/subscriber") {
-        dispatch(getSubscribedUsers(page));
-      } else {
+        dispatch(getAllSubscribers(page));
+      } else if(pathname === "/admin/users/all") {
         dispatch(getAllUsers(page));
+      } else if(pathname === "/admin/users/active"){
+        dispatch(getActiveSubscribers(page))
+      } else if(pathname === "/admin/users/expired"){
+        dispatch(getExpiredSubscribers(page))
       }
+      
       onClose();
     } catch (error) {
       toast.error(error || "Failed to update admin access");

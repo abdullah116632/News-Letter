@@ -65,7 +65,7 @@ const BlogList = () => {
             {/* Image */}
             <div className="relative w-full md:w-48 h-32">
               <Image
-                src={blog?.img}
+                src={blog?.img || "/images/default-blog.jpg"}
                 alt={blog?.title}
                 fill
                 className="object-cover rounded-lg border border-white/10"

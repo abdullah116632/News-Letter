@@ -19,7 +19,7 @@ export const getAllUsers = createAsyncThunk(
 );
 
 // Fetch subscribed users
-export const getSubscribedUsers = createAsyncThunk(
+export const getAllSubscribers = createAsyncThunk(
   "user/getSubscribedUsers",
   async (page, thunkAPI) => {
     try {
@@ -27,6 +27,32 @@ export const getSubscribedUsers = createAsyncThunk(
       return response.data.data.users;
     } catch (error) {
       const message = error.response?.data?.message || error.message || "Failed to fetch subscribed users";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getActiveSubscribers = createAsyncThunk(
+  "user/getSubscribedUsers",
+  async (page, thunkAPI) => {
+    try {
+      const response = await api.get(`/user/subscribed/active?page=${page}`);
+      return response.data.data.users;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message || "Failed to fetch active subscriber";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getExpiredSubscribers = createAsyncThunk(
+  "user/getSubscribedUsers",
+  async (page, thunkAPI) => {
+    try {
+      const response = await api.get(`/user/subscribed/expired?page=${page}`);
+      return response.data.data.users;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message || "Failed to fetch expires subscriber";
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -46,9 +72,6 @@ export const updateUserAdminStatus = createAsyncThunk(
     }
   }
 );
-
-
-
 
 
 const initialState = {
@@ -80,15 +103,15 @@ const usersSlice = createSlice({
       })
 
       // Get subscribed users
-      .addCase(getSubscribedUsers.pending, (state) => {
+      .addCase(getAllSubscribers.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getSubscribedUsers.fulfilled, (state, action) => {
+      .addCase(getAllSubscribers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
       })
-      .addCase(getSubscribedUsers.rejected, (state, action) => {
+      .addCase(getAllSubscribers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

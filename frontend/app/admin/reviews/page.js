@@ -35,7 +35,7 @@ const ReviewList = () => {
             {/* Reviewer Info */}
             <div className="flex items-center gap-3 w-10 h-10 rounded-full">
               <img
-                src={review?.user?.img || "/default-avatar.png"}
+                src={review?.user?.img || "/images/userprofile.png"}
                 alt={review?.user?.fullName || "User"}
                 className="w-10 h-10 rounded-full object-cover border border-white/20"
               />

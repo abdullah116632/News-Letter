@@ -1,9 +1,10 @@
-import UserTable from "../userTable";
+import UserTable from "../UserTableBase";
+import AllSubscibersTable from "./AllSubscribersTable";
 
 const Subscriber = () => {
   return (
     <div>
-      <UserTable />
+      <AllSubscibersTable />
     </div>
   );
 }

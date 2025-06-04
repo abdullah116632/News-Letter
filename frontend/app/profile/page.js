@@ -1,29 +1,35 @@
-import { redirect } from "next/navigation";
-import { getServerAxios } from "@/lib/server-axios";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import ProfileCard from "@/components/profileRoute/ProfileCard";
 import ButtonGroup from "@/components/profileRoute/ButtonGroup";
 import ReviewForm from "@/components/profileRoute/ReviewForm";
-// import { profileData } from "@/data/profile";
+import api from "@/lib/client-axios";
 
-export const dynamic = "force-dynamic";
+const UserProfile = () => {
+  const [profileData, setProfileData] = useState(null);
+  console.log(profileData)
+  const router = useRouter();
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/user/");
+        setProfileData(response.data.data.user);
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+        router.push("/");
+      }
+    };
 
-const UserProfile = async () => {
-  const axios = await getServerAxios();
-  let profileData = null;
+    fetchData();
+  }, []);
 
-  try {
-    const response = await axios.get("/user/");
-    profileData = response.data.data.user;
-  } catch (err) {
-    console.error("Error fetching profile:", err);
-    redirect("/");
-  }
-  
+  if (!profileData) return <div className="text-white p-10">Loading...</div>;
 
   return (
     <div className="min-h-screen text-white p-4 md:p-10">
-      {/* Title */}
       <h1 className="text-center text-3xl font-dmSans md:text-4xl font-bold mb-8">
         YOUR PROFILE
       </h1>
@@ -31,15 +37,10 @@ const UserProfile = async () => {
       <ProfileCard profileData={profileData} />
       <ButtonGroup />
 
-      {/* Newsletter Section */}
       <div className="grid md:grid-cols-2 gap-8 mt-16">
         <ReviewForm />
 
-        {/* Skills Section */}
-        <div
-          className="border-2 border-white/30 p-6 rounded-xl bg-cover bg-center relative overflow-hidden"
-          // style={{ backgroundImage: "url(/skills-bg.jpg)" }}
-        >
+        <div className="border-2 border-white/30 p-6 rounded-xl bg-cover bg-center relative overflow-hidden">
           <h2 className="text-2xl font-bold text-red-400 mb-4">YOUR SKILLS</h2>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <ul className="space-y-1">

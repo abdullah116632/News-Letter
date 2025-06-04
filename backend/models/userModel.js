@@ -14,21 +14,12 @@ const userSchema = new mongoose.Schema(
       required: [true, "name is required"],
       maxlength: [20, "name cannot exceed 20 characters"],
     },
-    isActive: {
-      type: Boolean,
-      default: true
-    },
-    isAdmin : {
-      type: Boolean,
-      default: false
-    },
     profession: {
       type: String,
     },
     occupation: {
       type: String,
     },
-
     email: {
       type: String,
       required: [true, "email is required"],
@@ -51,16 +42,6 @@ const userSchema = new mongoose.Schema(
         },
         message: "Password & Confirm password must be same",
       },
-    },
-    activePackage: {
-      type: String,
-    },
-    paymentMethod: {
-      type: String,
-    },
-    isSubscribed: {
-      type: Boolean,
-      default: false
     },
     institute: {
       type: String,
@@ -99,6 +80,28 @@ const userSchema = new mongoose.Schema(
     skills: {
       type: [String],
       default: [],
+    },
+    activePackage: {
+      type: String,
+    },
+    paymentMethod: {
+      type: String,
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    },
+    isAdmin : {
+      type: Boolean,
+      default: false
+    },
+    isAdded: {
+      type: Boolean,
+      default: false
+    },
+    isSubscribed: {
+      type: Boolean,
+      default: false
     },
   },
   { timestamps: true }

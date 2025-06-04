@@ -38,13 +38,13 @@ const BlogPage = async () => {
       <div className="w-full flex justify-center flex-wrap gap-8 md:gap-12 xl:gap-16">
         {blogs?.map((item) => (
           <div
-            key={item._id}
+            key={item?._id}
             className="bg-[#00200A4A] border-2 border-white/10 rounded-2xl shadow-lg transition-transform duration-300 hover:scale-[1.02] w-full max-w-sm sm:w-[22rem] md:w-[24rem] lg:w-[26rem] flex flex-col justify-between"
           >
             {/* Image */}
             <div className="relative w-full h-[220px] rounded-t-xl overflow-hidden">
               <Image
-                src={item.img}
+                src={item?.img || "/images/defauld-blog.jpg"}
                 alt="blog image"
                 layout="fill"
                 objectFit="cover"
@@ -55,13 +55,13 @@ const BlogPage = async () => {
             {/* Content */}
             <div className="flex flex-col justify-between items-center text-center p-4">
               <h6 className="text-lg font-semibold font-roboto mb-2 h-[3em] overflow-hidden line-clamp-2">
-                {item.title}
+                {item?.title}
               </h6>
               <p className="text-sm text-gray-200 h-[7.5em] overflow-hidden line-clamp-5 mb-4 px-2">
-                {item.description}
+                {item?.description}
               </p>
 
-              <Link href={`/blogs/${item._id}`}>
+              <Link href={`/blogs/${item?._id}`}>
                 <button className="bg-white text-black font-bold px-6 py-1.5 rounded-2xl hover:bg-gradient-to-r hover:from-[#FF00FB] hover:via-[#9B00FF] hover:to-[#00D9FF] hover:text-white transition cursor-pointer">
                   READ MORE
                 </button>

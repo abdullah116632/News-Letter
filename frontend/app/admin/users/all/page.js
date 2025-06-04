@@ -1,9 +1,9 @@
-import UserTable from "../userTable";
+import AllUserTable from "./AllUserTable";
 
 const Users = () => {
   return (
     <div>
-      <UserTable />
+      <AllUserTable />
     </div>
   );
 }

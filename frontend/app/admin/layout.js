@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import React from 'react';
-import { LayoutDashboard, FileText, MessageSquare } from 'lucide-react';
+import Link from "next/link";
+import React from "react";
+import { LayoutDashboard, FileText, MessageSquare } from "lucide-react";
 import { FaUsers } from "react-icons/fa";
 
 export default function AdminLayout({ children }) {
@@ -8,9 +8,18 @@ export default function AdminLayout({ children }) {
     <div className="relative z-0 min-h-screen flex flex-col lg:flex-row text-white">
       {/* Sidebar */}
       <aside className="w-full lg:w-1/5 bg-gradient-to-b mb-3 lg:mr-3 from-[#1e2761] to-[#131c45] p-6 shadow-lg rounded-2xl">
-        <h2 className="text-2xl font-bold mb-6 text-white tracking-wide">Admin Panel</h2>
+        <h2 className="text-2xl font-bold mb-6 text-white tracking-wide">
+          Admin Panel
+        </h2>
 
         <nav className="flex flex-col gap-4">
+          <Link
+            href="/admin/users/all"
+            className="flex items-center gap-3 text-lg hover:text-amber-400 transition"
+          >
+            <FaUsers size={30} />
+            Users
+          </Link>
           <Link
             href="/admin/new-blog"
             className="flex items-center gap-3 text-lg hover:text-amber-400 transition"
@@ -33,14 +42,6 @@ export default function AdminLayout({ children }) {
           >
             <MessageSquare size={20} />
             Manage Reviews
-          </Link>
-          <Link
-            href="/admin/users/all"
-            className="flex items-center gap-3 text-lg hover:text-amber-400 transition"
-          >
-            <FaUsers size={30} />
-
-            Users
           </Link>
         </nav>
       </aside>

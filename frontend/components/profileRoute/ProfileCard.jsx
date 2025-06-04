@@ -15,7 +15,7 @@ const profileCard = ({profileData}) => {
         <div className="flex flex-col lg:flex-row gap-5 pr-12 pt-2.5 lg:border-r-2 w-full lg:w-1/2">
           <div className="flex flex-col items-center text-center md:text-left">
             <Image
-              src={profileData?.img}
+              src={profileData?.img || "/images/userprofile.png"}
               alt="Profile Picture"
               width={200}
               height={250}

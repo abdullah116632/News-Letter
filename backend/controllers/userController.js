@@ -1,3 +1,4 @@
+import Subscription from "../models/subscriptionModel.js";
 import User from "../models/userModel.js";
 import CustomError from "../utils/customErrorClass.js";
 import { deleteImageFromCloudinary } from "../utils/deleteFileFromCloudinary.js";
@@ -53,6 +54,7 @@ export const getUserByEmail = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { fullName } = req.body;
     if (!fullName) {
       return next(new CustomError(400, "full name is required"));
@@ -61,7 +63,10 @@ export const updateProfile = async (req, res, next) => {
     let imgUrl;
     if (req.file) {
       await deleteImageFromCloudinary(req.user.img);
-      const response = await uploadToCloudinary(req.file.buffer, "newsLater/user-profilePic");
+      const response = await uploadToCloudinary(
+        req.file.buffer,
+        "newsLater/user-profilePic"
+      );
       imgUrl = response.secure_url;
     }
 
@@ -119,16 +124,19 @@ export const getAllUser = async (req, res, next) => {
     const totalUsers = await User.countDocuments();
     const totalPages = Math.ceil(totalUsers / limit);
 
-
     if (page > totalPages && totalUsers > 0) {
-      return next(new CustomError(404, `Page ${page} does not exist. Only ${totalPages} page(s) available.`));
+      return next(
+        new CustomError(
+          404,
+          `Page ${page} does not exist. Only ${totalPages} page(s) available.`
+        )
+      );
     }
 
     const users = await User.find({})
-      .select("img fullName email isSubscribed isAdmin")
+      .select("img fullName email isSubscribed isAdmin isAdded")
       .skip(skip)
       .limit(limit);
-
 
     if (users.length === 0 && totalUsers === 0) {
       return next(new CustomError(404, "No users found in the database."));
@@ -149,27 +157,88 @@ export const getAllUser = async (req, res, next) => {
   }
 };
 
-export const getSubscribedUsers = async (req, res, next) => {
+export const getAllSubscribers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 15;
     const skip = (page - 1) * limit;
 
-    const totalSubscribed = await User.countDocuments({ isSubscribed: true });
-    const totalPages = Math.ceil(totalSubscribed / limit);
+    // Count total subscriptions
+    const totalSubscribers = await Subscription.countDocuments();
 
-    if (totalSubscribed === 0) {
-      return next(new CustomError(404, "No subscribed users found."));
+    const totalPages = Math.ceil(totalSubscribers / limit);
+
+    // Handle non-existent page
+    if (page > totalPages && totalSubscribers > 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Page ${page} does not exist. Only ${totalPages} pages available.`,
+      });
     }
 
-    if (page > totalPages) {
-      return next(new CustomError(404, `Page ${page} does not exist. Only ${totalPages} page(s) available.`));
-    }
-
-    const users = await User.find({ isSubscribed: true })
-      .select("img fullName email isSubscribed isAdmin")
+    // Fetch all subscriptions (active + expired)
+    const allSubscriptions = await Subscription.find({ status: "Success" })
+      .populate("user")
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
+
+    const users = allSubscriptions.map((sub) => ({
+      ...sub.user._doc,
+      endingDate: sub.endingDate,
+    }));
+
+    res.status(200).json({
+      success: true,
+      currentPage: page,
+      totalPages,
+      totalSubscribers,
+      data: {
+        users,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching all subscribers:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const getActiveSubscribers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+    const currentDate = new Date();
+
+    // Total active subscriptions
+    const totalSubscribed = await Subscription.countDocuments({
+      endingDate: { $gt: currentDate },
+    });
+
+    const totalPages = Math.ceil(totalSubscribed / limit);
+
+    // Handle non-existent page
+    if (page > totalPages && totalSubscribed > 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Page ${page} does not exist. Only ${totalPages} pages available.`,
+      });
+    }
+
+    // Fetch active subscriptions
+    const activeSubscriptions = await Subscription.find({
+      status: "Success",
+      endingDate: { $gt: currentDate },
+    })
+      .populate("user")
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const users = activeSubscriptions.map((sub) => ({
+      ...sub.user._doc,
+      endingDate: sub.endingDate,
+    }));
 
     res.status(200).json({
       success: true,
@@ -180,12 +249,63 @@ export const getSubscribedUsers = async (req, res, next) => {
         users,
       },
     });
-  } catch (err) {
-    console.error(err);
-    next(err);
+  } catch (error) {
+    console.error("Error fetching subscriptions:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+export const getExpiredSubscribers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+    const currentDate = new Date();
+
+    // Count expired subscriptions
+    const totalExpired = await Subscription.countDocuments({
+      endingDate: { $lte: currentDate },
+    });
+
+    const totalPages = Math.ceil(totalExpired / limit);
+
+    // Handle non-existent page
+    if (page > totalPages && totalExpired > 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Page ${page} does not exist. Only ${totalPages} pages available.`,
+      });
+    }
+
+    // Fetch expired subscriptions
+    const expiredSubscriptions = await Subscription.find({
+      status: "Success",
+      endingDate: { $lte: currentDate },
+    })
+      .populate("user")
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const users = expiredSubscriptions.map((sub) => ({
+      ...sub.user._doc,
+      endingDate: sub.endingDate,
+    }));
+
+    res.status(200).json({
+      success: true,
+      currentPage: page,
+      totalPages,
+      totalExpired,
+      data: {
+        users,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching expired subscriptions:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 export const updateAdminAccess = async (req, res, next) => {
   try {
@@ -193,7 +313,9 @@ export const updateAdminAccess = async (req, res, next) => {
 
     // Prevent self-admin status change
     if (req.user._id.toString() === userId) {
-      return res.status(403).json({ message: "You cannot change your own admin access" });
+      return res
+        .status(403)
+        .json({ message: "You cannot change your own admin access" });
     }
 
     const user = await User.findById(userId);
@@ -204,7 +326,8 @@ export const updateAdminAccess = async (req, res, next) => {
       const adminCount = await User.countDocuments({ isAdmin: true });
       if (adminCount === 1) {
         return res.status(400).json({
-          message: "At least one admin must exist. You cannot remove admin access from the last admin.",
+          message:
+            "At least one admin must exist. You cannot remove admin access from the last admin.",
         });
       }
     }
@@ -216,15 +339,13 @@ export const updateAdminAccess = async (req, res, next) => {
     );
 
     res.status(200).json({
-      message: `Admin access ${updatedUser.isAdmin ? "granted" : "removed"} successfully.`,
+      message: `Admin access ${
+        updatedUser.isAdmin ? "granted" : "removed"
+      } successfully.`,
       user: updatedUser,
     });
   } catch (error) {
     console.error("Error updating admin access:", error);
-    next(error)
+    next(error);
   }
 };
-
-
-
-

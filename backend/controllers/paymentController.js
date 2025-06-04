@@ -87,7 +87,6 @@ export const subscribe = async (req, res) => {
 
 // INITIATE RENEW PAYMENT
 export const renew = async (req, res) => {
-  console.log("request come")
   const { price, serviceType } = req.body;
   const { _id, fullName, email } = req.user;
 
@@ -221,8 +220,7 @@ export const handleSuccess = async (req, res) => {
 
       const currentEnd =
         subscription.endingDate > now ? subscription.endingDate : now;
-      const newEnd = new Date(currentEnd);
-      newEnd.setMonth(newEnd.getMonth() + 1);
+      const newEnd = new Date(currentEnd.getTime() + 30 * 24 * 60 * 60 * 1000);
 
       subscription.status = "Success";
       subscription.invoice_id = invoiceId;
