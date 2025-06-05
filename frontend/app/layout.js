@@ -34,6 +34,9 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
+  icons: {
+    icon: "/favicon.ico", // put your favicon in the /public folder
+  },
 };
 
 

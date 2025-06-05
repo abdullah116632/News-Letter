@@ -1,4 +1,3 @@
-
 import {
   FaFacebookF,
   FaInstagram,
@@ -8,12 +7,13 @@ import {
 } from "react-icons/fa6";
 import { SlSocialPintarest } from "react-icons/sl";
 import SubscribeButton from "./SubscribeButton";
+import Image from "next/image";
 
 const Footer = () => {
   return (
     <footer className="text-white px-4 sm:px-6 py-10 sm:py-16">
       {/* CTA Section */}
-      <section className="max-w-6xl mx-auto text-center mb-12 sm:mb-16">
+      <section className="max-w-6xl mx-auto text-center mb-8 sm:mb-10">
         <h5 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-[#FF00E5] to-[#FF0022] bg-clip-text text-transparent">
           Ready to Unlock Your Future?
         </h5>
@@ -23,6 +23,18 @@ const Footer = () => {
           with verified, curated opportunities delivered directly to you.
         </p>
         <SubscribeButton />
+      </section>
+
+      {/* New Product Section */}
+      <section className="max-w-6xl mx-auto flex items-center justify-center gap-5 mb-5 sm:mb-7">
+        <span className="text-4xl font-bold text-pink-700">A Product Of </span>
+        <Image
+          src="/images/motherBrand.png" // your logo in /public folder
+          alt="Company Logo"
+          width={96} // example width in pixels
+          height={32} // example height in pixels
+          className="object-contain text-fuchsia-800"
+        />
       </section>
 
       {/* Social Section */}
@@ -35,7 +47,7 @@ const Footer = () => {
           <div className="flex justify-center gap-6 sm:gap-8 flex-wrap">
             {[
               {
-                href: "https://facebook.com",
+                href: "https://www.facebook.com/share/15dakuSNdY/",
                 icon: (
                   <FaFacebookF className="text-white w-6 sm:w-7 md:w-8 lg:w-10 h-6 sm:h-7 md:h-8 lg:h-10" />
                 ),
@@ -43,7 +55,7 @@ const Footer = () => {
                 shadow: "hover:shadow-[#1877F2]/40",
               },
               {
-                href: "https://instagram.com",
+                href: "https://www.instagram.com/opt_national?igsh=amkxbWdxZWVpdWNj",
                 icon: (
                   <FaInstagram className="text-white w-6 sm:w-7 md:w-8 lg:w-10 h-6 sm:h-7 md:h-8 lg:h-10" />
                 ),
@@ -51,7 +63,7 @@ const Footer = () => {
                 shadow: "hover:shadow-[#D62976]/40",
               },
               {
-                href: "https://twitter.com",
+                href: "https://x.com/opt_national?t=jSuLmDKT2vsRJhcQE6SJ9w&s=09",
                 icon: (
                   <FaXTwitter className="text-white w-6 sm:w-7 md:w-8 lg:w-10 h-6 sm:h-7 md:h-8 lg:h-10" />
                 ),
@@ -59,7 +71,7 @@ const Footer = () => {
                 shadow: "hover:shadow-gray-600/40",
               },
               {
-                href: "https://linkedin.com",
+                href: "https://www.linkedin.com/company/opt-national/",
                 icon: (
                   <FaLinkedinIn className="text-white w-6 sm:w-7 md:w-8 lg:w-10 h-6 sm:h-7 md:h-8 lg:h-10" />
                 ),
@@ -67,7 +79,7 @@ const Footer = () => {
                 shadow: "hover:shadow-[#0077B5]/40",
               },
               {
-                href: "https://pinterest.com",
+                href: "https://pin.it/10fcw1WX8",
                 icon: (
                   <SlSocialPintarest className="text-white w-6 sm:w-7 md:w-8 lg:w-10 h-6 sm:h-7 md:h-8 lg:h-10" />
                 ),

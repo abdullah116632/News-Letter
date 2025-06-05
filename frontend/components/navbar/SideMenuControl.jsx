@@ -37,6 +37,9 @@ const SideMenuControl = () => {
       if (element) {
         setTimeout(() => {
           element.scrollIntoView({ behavior: "smooth" });
+          setTimeout(() => {
+            window.history.replaceState(null, "", window.location.pathname);
+          }, 500);
         }, 100);
       }
     }

@@ -9,6 +9,9 @@ export const subscribe = async (req, res) => {
   const { price, servicePlanId } = req.body;
   const { _id, fullName, email } = req.user;
 
+  console.log(process.env.UDDOKTAPAY_CHECKOUT_API_URL);
+  console.log(process.env.UDDOKTAPAY_API_KEY);
+
   if (!Number.isFinite(price) || price <= 0 || !servicePlanId) {
     return res.status(400).json({ success: false, message: "Invalid input" });
   }

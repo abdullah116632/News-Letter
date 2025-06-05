@@ -150,8 +150,7 @@ export const resetPassword = createAsyncThunk(
       const response = await api.post("/auth/reset-password", data, {
         headers: { "Content-Type": "application/json" },
       }); // { email, otp, newPassword, confirmPassword }
-      console.log(response);
-      return response.data.message;
+      return response.data.data.user;
     } catch (error) {
       const message =
         error.response?.data?.message ||
@@ -185,8 +184,18 @@ export const deleteUser = createAsyncThunk(
 const storedUser =
   typeof window !== "undefined" ? localStorage.getItem("user") : null;
 
+let parsedUser = null;
+try {
+  if (storedUser && storedUser !== "undefined") {
+    parsedUser = JSON.parse(storedUser);
+  }
+} catch (err) {
+  console.error("Failed to parse stored user:", err);
+  parsedUser = null;
+}
+
 const initialState = {
-  user: storedUser ? JSON.parse(storedUser) : null,
+  user: parsedUser,
   loading: false,
   error: null,
 };
@@ -317,8 +326,10 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(resetPassword.fulfilled, (state) => {
+      .addCase(resetPassword.fulfilled, (state, action) => {
         state.loading = false;
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
