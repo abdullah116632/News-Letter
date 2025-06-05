@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-const ReviewForm = () => {
+const ReviewForm = ({ subscriptionData }) => {
   const dispatch = useDispatch();
-  const {loading} = useSelector(state => state.reviewData);
+  const { loading } = useSelector((state) => state.reviewData);
+  const { data } = useSelector((state) => state.subscriptionData);
 
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -17,15 +18,14 @@ const ReviewForm = () => {
       rating,
       comment,
     };
-    try{
+    try {
       await dispatch(createReview(data)).unwrap();
       setRating(0);
       setComment("");
       toast.success("Review submitted");
-    }catch(err){
-      toast.error(err || "Review submission failed")
+    } catch (err) {
+      toast.error(err || "Review submission failed");
     }
-
   };
 
   return (
@@ -45,7 +45,9 @@ const ReviewForm = () => {
               onMouseEnter={() => setHoverRating(star)}
               onMouseLeave={() => setHoverRating(0)}
               className={`cursor-pointer transition ${
-                (hoverRating || rating) >= star ? "text-yellow-400" : "text-gray-400"
+                (hoverRating || rating) >= star
+                  ? "text-yellow-400"
+                  : "text-gray-400"
               }`}
             >
               ★
@@ -66,8 +68,10 @@ const ReviewForm = () => {
       <div className="mt-4 flex justify-center lg:justify-end">
         <button
           onClick={handleSubmit}
-          disabled={loading}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition flex items-center gap-2 cursor-pointer"
+          disabled={loading || !subscriptionData}
+          className={`bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition flex items-center gap-2 cursor-pointer ${
+            loading || !subscriptionData ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           {loading ? (
             <svg

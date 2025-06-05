@@ -55,12 +55,12 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
     priorResearchExperience: {
-      type: String,
-      enum: ["Yes", "No"],
+      type: Boolean,
+      default: null,
     },
     englishProficiency: {
-      type: String,
-      enum: ["Yes", "No"],
+      type: Boolean,
+      default: null,
     },
     preferredDegree: {
       type: String,
@@ -81,25 +81,11 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    activePackage: {
-      type: String,
-    },
-    paymentMethod: {
-      type: String,
-    },
     isActive: {
       type: Boolean,
       default: true
     },
     isAdmin : {
-      type: Boolean,
-      default: false
-    },
-    isAdded: {
-      type: Boolean,
-      default: false
-    },
-    isSubscribed: {
       type: Boolean,
       default: false
     },

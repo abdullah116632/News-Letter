@@ -6,10 +6,13 @@ import ProfileCard from "@/components/profileRoute/ProfileCard";
 import ButtonGroup from "@/components/profileRoute/ButtonGroup";
 import ReviewForm from "@/components/profileRoute/ReviewForm";
 import api from "@/lib/client-axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchActiveSubscription } from "@/redux/slices/subscriptionSlice";
 
 const UserProfile = () => {
   const [profileData, setProfileData] = useState(null);
-  console.log(profileData)
+  const dispatch = useDispatch()
+  const {data} = useSelector((state) => state.subscriptionData)
   const router = useRouter();
 
   useEffect(() => {
@@ -24,6 +27,7 @@ const UserProfile = () => {
     };
 
     fetchData();
+    dispatch(fetchActiveSubscription());
   }, []);
 
   if (!profileData) return <div className="text-white p-10">Loading...</div>;
@@ -34,11 +38,11 @@ const UserProfile = () => {
         YOUR PROFILE
       </h1>
 
-      <ProfileCard profileData={profileData} />
+      <ProfileCard profileData={profileData} subscriptionData={data} />
       <ButtonGroup />
 
       <div className="grid md:grid-cols-2 gap-8 mt-16">
-        <ReviewForm />
+        <ReviewForm subscriptionData={data} />
 
         <div className="border-2 border-white/30 p-6 rounded-xl bg-cover bg-center relative overflow-hidden">
           <h2 className="text-2xl font-bold text-red-400 mb-4">YOUR SKILLS</h2>
