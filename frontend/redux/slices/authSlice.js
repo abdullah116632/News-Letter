@@ -9,10 +9,29 @@ export const signupUser = createAsyncThunk(
       const response = await api.post("/auth/signup", userData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return response.data.data.user; // return the user data
+      return null;
     } catch (error) {
       const message =
         error.response?.data?.message || error.message || "Signup failed";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// verify user
+export const verifyUser = createAsyncThunk(
+  "user/verifyUser",
+  async (data, thunkAPI) => {
+    try {
+      const response = await api.post("/auth/verify-user", data, {
+        headers: { "Content-Type": "application/json" },
+      }); // { email, otp }
+      return response.data.data.user; // return full user after verification
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "User verification failed";
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -191,9 +210,23 @@ const authSlice = createSlice({
       .addCase(signupUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(signupUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Verify User (new)
+      .addCase(verifyUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      })
+      .addCase(verifyUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

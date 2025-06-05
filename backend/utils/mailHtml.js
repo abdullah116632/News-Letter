@@ -17,6 +17,29 @@ export const createOtpMailHtml = (data) => {
       </html>`
 }
 
+export const createSignupVerificationHtml = (data) => {
+  return `<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Verify Your Email</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px; margin: 0;">
+    <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);">
+      <h2 style="color: #333333; text-align: center; margin-top: 0;">Email Verification</h2>
+      <p style="font-size: 16px; color: #555555;">Hello <strong>${data.user.fullName}</strong>,</p>
+      <p style="font-size: 16px; color: #555555;">Use the following One-Time Password (OTP) to verify your email address:</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <span style="font-size: 36px; font-weight: bold; letter-spacing: 4px; color: #007bff;">${data.otp}</span>
+      </div>
+      <p style="font-size: 14px; color: #888888;">This OTP is valid for <strong>15 minutes</strong>. Please do not share it with anyone.</p>
+      <p style="font-size: 14px; color: #888888;">If you did not request this, you can safely ignore this email.</p>
+      <hr style="border: none; border-top: 1px solid #eeeeee; margin: 30px 0;">
+      <p style="font-size: 13px; color: #aaaaaa; text-align: center;">— Newsletter Support Team</p>
+    </div>
+  </body>
+</html>`
+}
+
 export const createSignupMailHtml = (data) => {
     return `
       <html>

@@ -1,11 +1,12 @@
 import express from "express";
-import { deleteUser, forgotPassword, login, logout, resetPassword, signup, updatePassword, verifyOtp } from "../controllers/authController.js";
+import { deleteUser, forgotPassword, login, logout, resetPassword, signup, updatePassword, verifyOtp, verifyUser } from "../controllers/authController.js";
 import { upload } from "../middleware/fileUpload.js";
 import protectRoute from "../middleware/protectRoute.js";
 
 const router = express.Router();
 
 router.post("/signup", upload.single("img"), signup);
+router.post("/verify-user", verifyUser);
 router.post("/login", login);
 router.post("/logout", logout)
 router.post("/update-password", protectRoute, updatePassword);

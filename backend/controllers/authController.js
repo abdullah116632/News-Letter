@@ -49,21 +49,90 @@ export const signup = async (req, res, next) => {
       password,
       confirmPassword,
       img: response.secure_url,
+      isVerified: false,
     });
 
     await newUser.save();
-    generateTokenAndSetToken(newUser._id, res);
 
-    console.log(newUser);
+    const otp = otpGenerator.generate(6, {
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
 
-    await sendEmail("signup", { user: newUser });
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1500);
+
+    await Otp.create({
+      email,
+      otp,
+      expiresAt,
+    });
+
+    await sendEmail("subscription", {
+      user: newUser,
+      otp,
+    });
 
     const userResponse = newUser.toObject();
     delete userResponse.password;
     delete userResponse.confirmPassword;
 
     res.status(201).json({
+      status: "pending",
+      message:
+        "OTP sent to your email. Please verify to activate your account.",
+      data: {
+        user: userResponse,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const verifyUser = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return next(new CustomError(400, "Email and OTP are required."));
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) return next(new CustomError(404, "User not found."));
+    if (user.isVerified)
+      return next(new CustomError(400, "User already verified."));
+
+    const storedOtp = await Otp.findOne({ email, otp });
+    if (!storedOtp) return next(new CustomError(400, "Invalid OTP."));
+
+    if (storedOtp.expiresAt < Date.now()) {
+      await Otp.deleteOne({ _id: storedOtp._id }); // Cleanup
+      return next(new CustomError(400, "OTP has expired."));
+    }
+
+    // Update user verification status
+    user.isVerified = true;
+    await user.save({ validateBeforeSave: false });
+
+    // Delete used OTP
+    await Otp.deleteMany({ email });
+
+    // Set JWT token
+    generateTokenAndSetToken(user._id, res);
+
+    await sendEmail("signup", {
+      user,
+      otp,
+    });
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    delete userResponse.confirmPassword;
+
+    res.status(200).json({
       status: "success",
+      message: "Account verified successfully.",
       data: {
         user: userResponse,
       },

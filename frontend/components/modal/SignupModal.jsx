@@ -14,7 +14,6 @@ const SignupModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    package: "",
     password: "",
     confirmPassword: "",
     termsAccepted: false,
@@ -62,7 +61,6 @@ const SignupModal = ({ onClose }) => {
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address.";
     }
-    if (!formData.package) newErrors.package = "Please select a package.";
     if (!formData.password) newErrors.password = "Password is required.";
     else if (formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters.";
@@ -90,9 +88,6 @@ const SignupModal = ({ onClose }) => {
         if (!value.trim()) message = "Email is required.";
         else if (!/^\S+@\S+\.\S+$/.test(value))
           message = "Please enter a valid email address.";
-        break;
-      case "package":
-        if (!value) message = "Please select a package.";
         break;
       case "password":
         if (!value) message = "Password is required.";
@@ -125,7 +120,6 @@ const SignupModal = ({ onClose }) => {
     const data = new FormData();
     data.append("fullName", formData.fullName);
     data.append("email", formData.email);
-    data.append("package", formData.package);
     data.append("password", formData.password);
     data.append("confirmPassword", formData.confirmPassword);
     data.append("img", selectedFile);
@@ -133,8 +127,8 @@ const SignupModal = ({ onClose }) => {
     // Dispatch signup async thunk
     try {
       await dispatch(signupUser(data)).unwrap();
-      toast.success("Signup successful!");
-      onClose();
+      dispatch(openModal({ modalName: "verifyUser", data: formData.email }));
+      toast.success("Verification mail send");
     } catch (err) {
       toast.error(err || "Signup failed.");
     }
@@ -227,29 +221,6 @@ const SignupModal = ({ onClose }) => {
 
             {errors.email && (
               <p className="text-red-600 text-sm mt-1">{errors.email}</p>
-            )}
-          </div>
-
-          <div>
-            <select
-              name="package"
-              value={formData.package}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border outline-1 rounded-md focus:outline-none focus:ring-2 ${
-                errors.package
-                  ? "border-red-500 focus:ring-red-400 outline-none"
-                  : "border-gray-300 focus:ring-purple-500"
-              }`}
-            >
-              <option value="" disabled>
-                Select a package
-              </option>
-              <option value="basic">Basic</option>
-              <option value="premium">Premium</option>
-              <option value="enterprise">Enterprise</option>
-            </select>
-            {errors.package && (
-              <p className="text-red-600 text-sm mt-1">{errors.package}</p>
             )}
           </div>
 
@@ -351,7 +322,7 @@ const SignupModal = ({ onClose }) => {
         <p className="text-sm text-center mt-4 text-gray-600">
           Have an account?{" "}
           <button
-            onClick={() => dispatch(openModal({modalName: "login"}))}
+            onClick={() => dispatch(openModal({ modalName: "login" }))}
             className="text-blue-600 hover:underline cursor-pointer"
           >
             Login here

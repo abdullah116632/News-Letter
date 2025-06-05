@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { createOtpMailHtml, createSignupMailHtml, createSubscriptionMailHtml } from "./mailHtml.js";
+import { createOtpMailHtml, createSignupMailHtml, createSignupVerificationHtml, createSubscriptionMailHtml } from "./mailHtml.js";
 
 const transporter = nodemailer.createTransport({
   service: process.env.MAIL_SERVICE,
@@ -18,10 +18,14 @@ const sendEmail = async (type, data) => {
       subject = "Welcome to Our Opt.national!";
       html = createSignupMailHtml(data);
       break;
+    
+      case "verifyUser":
+        subject = "Your verification otp"
+        html = createSignupMailHtml(data)
 
     case "subscription":
       subject = "Subscription Confirmed!";
-      html = createSubscriptionMailHtml(data);
+      html = createSignupVerificationHtml(data);
       break;
 
     case "otp":

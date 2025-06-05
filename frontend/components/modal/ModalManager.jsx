@@ -17,6 +17,7 @@ import RenewPackageModal from "./RenewPackageModal";
 import ChangePackageModal from "./ChangePackageModal";
 import ViewSubscriptionModal from "./ViewSubscribtionModal";
 import DeleteUserModal from "./DeleteUserModal";
+import VerifyUserModal from "./VerifyUserModal";
 
 const ModalManager = () => {
   const { modalName, isOpen, data } = useSelector((state) => state.modal);
@@ -61,6 +62,8 @@ const ModalManager = () => {
       return <ViewSubscriptionModal onClose={handleClose} />;
     case "deleteUser":
       return <DeleteUserModal onClose={handleClose} />;
+    case "verifyUser":
+      return <VerifyUserModal onClose={handleClose} email={data} />;
     default:
       return null;
   }
