@@ -16,6 +16,8 @@ import brevoRoute from "./routes/brevoRoutes.js";
 
 dotenv.config();
 
+import "./cron/subscriptionCron.js";
+
 const app = express();
 
 app.use(cors({

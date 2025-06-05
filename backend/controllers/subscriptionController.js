@@ -159,6 +159,7 @@ export const updatePackageForFree = async (req, res) => {
     }
 
     subscription.servicePlan = servicePlanId;
+    subscription.status = "pending";
     await subscription.save();
 
     res.status(200).json({ success: true, data: subscription });
@@ -212,6 +213,7 @@ export const handleSuccess = async (req, res) => {
         {
           servicePlan: servicePlanId,
           invoiceId,
+          status: "pending"
         },
         { runValidators: false, new: true }
       );
