@@ -12,7 +12,10 @@ import { useDispatch } from "react-redux";
 import { openModal } from "@/redux/slices/modalSlice";
 import { toast } from "react-toastify";
 import { addUserToBrevo, removeUserFromBrevo } from "@/redux/slices/brevoSlice";
-import { getActiveSubscribers, getExpiredSubscribers } from "@/redux/slices/usersSlice";
+import {
+  getActiveSubscribers,
+  getExpiredSubscribers,
+} from "@/redux/slices/usersSlice";
 import { usePathname } from "next/navigation";
 
 const UserTableBase = ({
@@ -21,7 +24,6 @@ const UserTableBase = ({
   setPage,
   heading,
   copiedEmail,
-  setCopiedEmail,
   showBrevo,
   showExpiresDate,
   handleCopyAll,
@@ -30,44 +32,36 @@ const UserTableBase = ({
   const dispatch = useDispatch();
   const pathname = usePathname();
 
-  const handleAddToBrevo = async (user) => {
-    try {
-      await dispatch(addUserToBrevo(user)).unwrap();
-      toast.success("User added to Brevo successfully.");
 
-      if (pathname === "/admin/users/active") {
-        dispatch(getActiveSubscribers(page));
-      } else if (pathname === "/admin/users/expired") {
-        dispatch(getExpiredSubscribers(page));
-      }
-    } catch (err) {
-      toast.error(err?.message || "Failed to add user.");
-    }
-  };
+  // const handleAddToBrevo = async (user) => {
+  //   try {
+  //     await dispatch(addUserToBrevo(user)).unwrap();
+  //     toast.success("User added to Brevo successfully.");
 
-  const handleRemoveFromBrevo = async (user) => {
-    try {
-      await dispatch(removeUserFromBrevo(user)).unwrap();
-      toast.success("User removed from Brevo successfully.");
+  //     if (pathname === "/admin/users/active") {
+  //       dispatch(getActiveSubscribers(page));
+  //     } else if (pathname === "/admin/users/expired") {
+  //       dispatch(getExpiredSubscribers(page));
+  //     }
+  //   } catch (err) {
+  //     toast.error(err?.message || "Failed to add user.");
+  //   }
+  // };
 
-      if (pathname === "/admin/users/active") {
-        dispatch(getActiveSubscribers(page));
-      } else if (pathname === "/admin/users/expired") {
-        dispatch(getExpiredSubscribers(page));
-      }
-    } catch (err) {
-      toast.error(err?.message || "Failed to remove user.");
-    }
-  };
+  // const handleRemoveFromBrevo = async (user) => {
+  //   try {
+  //     await dispatch(removeUserFromBrevo(user)).unwrap();
+  //     toast.success("User removed from Brevo successfully.");
 
-  const getRemainingDays = (endingDate) => {
-    const end = new Date(endingDate);
-    const today = new Date();
-    end.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-    const diffTime = end.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
+  //     if (pathname === "/admin/users/active") {
+  //       dispatch(getActiveSubscribers(page));
+  //     } else if (pathname === "/admin/users/expired") {
+  //       dispatch(getExpiredSubscribers(page));
+  //     }
+  //   } catch (err) {
+  //     toast.error(err?.message || "Failed to remove user.");
+  //   }
+  // };
 
   return (
     <div className="overflow-x-auto bg-gray-950 rounded-b-2xl text-white p-6 shadow-lg">
@@ -89,13 +83,9 @@ const UserTableBase = ({
             <th className="p-4 border-b border-white/10">Full Name</th>
             <th className="p-4 border-b border-white/10 relative">Email</th>
             <th className="p-4 border-b border-white/10">Is Admin</th>
-            <th className="p-4 border-b border-white/10">Is Subscribed</th>
-            {showBrevo && (
+            {/* {showBrevo && (
               <th className="p-4 border-b border-white/10">Brevo</th>
-            )}
-            {showExpiresDate && (
-              <th className="p-4 border-b border-white/10">Expires In</th>
-            )}
+            )} */}
           </tr>
         </thead>
         <tbody>
@@ -157,14 +147,7 @@ const UserTableBase = ({
                     />
                   )}
                 </td>
-                <td className="p-4 border-b border-white/10">
-                  {user?.isSubscribed ? (
-                    <FaCheckCircle className="text-green-400 text-lg" />
-                  ) : (
-                    <FaTimesCircle className="text-red-500 text-lg" />
-                  )}
-                </td>
-                {showBrevo && (
+                {/* {showBrevo && (
                   <td className="p-4 border-b border-white/10">
                     {user?.isSubscribed ? (
                       user?.isAdded ? (
@@ -187,23 +170,16 @@ const UserTableBase = ({
                       />
                     )}
                   </td>
-                )}
-                {showExpiresDate && (
-                  <td className="p-4 border-b border-white/10">
-                    {getRemainingDays(user?.endingDate)} days
-                  </td>
-                )}
+                )} */}
               </tr>
             ))
           ) : (
-            <tr>
-              <td
-                colSpan={6 + (showBrevo ? 1 : 0) + (showExpiresDate ? 1 : 0)}
-                className="text-center p-6 text-gray-400"
-              >
-                No users found.
-              </td>
-            </tr>
+            <td
+              colSpan={6 + (showBrevo ? 1 : 0)}
+              className="text-center p-6 text-gray-400"
+            >
+              No users found.
+            </td>
           )}
         </tbody>
       </table>

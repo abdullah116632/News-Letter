@@ -157,155 +157,181 @@ export const getAllUser = async (req, res, next) => {
   }
 };
 
-export const getAllSubscribers = async (req, res) => {
+export const getAllSubscribedUsers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 15;
     const skip = (page - 1) * limit;
 
-    // Count total subscriptions
-    const totalSubscribers = await Subscription.countDocuments();
+    const aggregatePipeline = [
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$user",
+          latestSubscription: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "userInfo",
+        },
+      },
+      { $unwind: "$userInfo" },
+      {
+        $project: {
+          _id: 0,
+          user: {
+            _id: "$userInfo._id",
+            fullName: "$userInfo.fullName",
+            email: "$userInfo.email",
+            img: "$userInfo.img",
+            isAdmin: "$userInfo.isAdmin",
+          },
+        },
+      },
+      { $skip: skip },
+      { $limit: limit },
+    ];
 
-    const totalPages = Math.ceil(totalSubscribers / limit);
+    const result = await Subscription.aggregate(aggregatePipeline);
+    const total = await Subscription.distinct("user");
+    const totalPages = Math.ceil(total.length / limit);
 
-    // Handle non-existent page
-    if (page > totalPages && totalSubscribers > 0) {
-      return res.status(404).json({
-        success: false,
-        message: `Page ${page} does not exist. Only ${totalPages} pages available.`,
-      });
-    }
-
-    // Fetch all subscriptions (active + expired)
-    const allSubscriptions = await Subscription.find({ status: "Success" })
-      .populate("user")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const users = allSubscriptions.map((sub) => ({
-      ...sub.user._doc,
-      endingDate: sub.endingDate,
-    }));
+    const usersOnly = result.map(item => item.user);
 
     res.status(200).json({
       success: true,
       currentPage: page,
       totalPages,
-      totalSubscribers,
-      data: {
-        users,
-      },
+      totalSubscribers: total.length,
+      data: { users: usersOnly },
     });
   } catch (error) {
-    console.error("Error fetching all subscribers:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const getActiveSubscribers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 15;
     const skip = (page - 1) * limit;
-    const currentDate = new Date();
 
-    // Total active subscriptions
-    const totalSubscribed = await Subscription.countDocuments({
-      endingDate: { $gt: currentDate },
-    });
+    const aggregatePipeline = [
+      { $match: { status: "active" } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$user",
+          latestSubscription: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "userInfo",
+        },
+      },
+      { $unwind: "$userInfo" },
+      {
+        $project: {
+          _id: 0,
+          user: {
+            _id: "$userInfo._id",
+            fullName: "$userInfo.fullName",
+            email: "$userInfo.email",
+            img: "$userInfo.img",
+            isAdmin: "$userInfo.isAdmin",
+          },
+        },
+      },
+      { $skip: skip },
+      { $limit: limit },
+    ];
 
-    const totalPages = Math.ceil(totalSubscribed / limit);
+    const result = await Subscription.aggregate(aggregatePipeline);
+    const total = await Subscription.distinct("user", { status: "active" });
+    const totalPages = Math.ceil(total.length / limit);
 
-    // Handle non-existent page
-    if (page > totalPages && totalSubscribed > 0) {
-      return res.status(404).json({
-        success: false,
-        message: `Page ${page} does not exist. Only ${totalPages} pages available.`,
-      });
-    }
-
-    // Fetch active subscriptions
-    const activeSubscriptions = await Subscription.find({
-      status: "Success",
-      endingDate: { $gt: currentDate },
-    })
-      .populate("user")
-      .sort({ updatedAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const users = activeSubscriptions.map((sub) => ({
-      ...sub.user._doc,
-      endingDate: sub.endingDate,
-    }));
+    const usersOnly = result.map(item => item.user);
 
     res.status(200).json({
       success: true,
       currentPage: page,
       totalPages,
-      totalSubscribed,
-      data: {
-        users,
-      },
+      totalSubscribers: total.length,
+      data: { users: usersOnly },
     });
   } catch (error) {
-    console.error("Error fetching subscriptions:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const getExpiredSubscribers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 15;
     const skip = (page - 1) * limit;
-    const currentDate = new Date();
 
-    // Count expired subscriptions
-    const totalExpired = await Subscription.countDocuments({
-      endingDate: { $lte: currentDate },
-    });
+    const aggregatePipeline = [
+      { $match: { status: "expired" } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$user",
+          latestSubscription: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "userInfo",
+        },
+      },
+      { $unwind: "$userInfo" },
+      {
+        $project: {
+          _id: 0,
+          user: {
+            _id: "$userInfo._id",
+            fullName: "$userInfo.fullName",
+            email: "$userInfo.email",
+            img: "$userInfo.img",
+            isAdmin: "$userInfo.isAdmin",
+          },
+        },
+      },
+      { $skip: skip },
+      { $limit: limit },
+    ];
 
-    const totalPages = Math.ceil(totalExpired / limit);
+    const result = await Subscription.aggregate(aggregatePipeline);
+    const total = await Subscription.distinct("user", { status: "expired" });
+    const totalPages = Math.ceil(total.length / limit);
 
-    // Handle non-existent page
-    if (page > totalPages && totalExpired > 0) {
-      return res.status(404).json({
-        success: false,
-        message: `Page ${page} does not exist. Only ${totalPages} pages available.`,
-      });
-    }
-
-    // Fetch expired subscriptions
-    const expiredSubscriptions = await Subscription.find({
-      status: "Success",
-      endingDate: { $lte: currentDate },
-    })
-      .populate("user")
-      .sort({ updatedAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const users = expiredSubscriptions.map((sub) => ({
-      ...sub.user._doc,
-      endingDate: sub.endingDate,
-    }));
+    const usersOnly = result.map(item => item.user);
 
     res.status(200).json({
       success: true,
       currentPage: page,
       totalPages,
-      totalExpired,
-      data: {
-        users,
-      },
+      totalSubscribers: total.length,
+      data: { users: usersOnly },
     });
   } catch (error) {
-    console.error("Error fetching expired subscriptions:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const updateAdminAccess = async (req, res, next) => {
   try {

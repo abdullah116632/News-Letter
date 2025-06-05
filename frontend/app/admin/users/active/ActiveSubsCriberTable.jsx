@@ -9,7 +9,6 @@ const ActiveSubscribersTable = () => {
   const [page, setPage] = useState(1);
   const [copiedEmail, setCopiedEmail] = useState(null);
   const { users, loading, error } = useSelector((state) => state.usersData);
-  console.log(users)
 
   useEffect(() => {
     dispatch(getActiveSubscribers(page));
