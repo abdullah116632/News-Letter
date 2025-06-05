@@ -41,7 +41,7 @@ const UserOption = ({ setUserOptionOpen }) => {
               Update Password
             </li>
 
-          <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer rounded-md">
+          <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer rounded-md" onClick={() => dispatch(openModal({ modalName: "viewSbuscription" }))}>
             My subscription
           </li>
 
@@ -52,7 +52,7 @@ const UserOption = ({ setUserOptionOpen }) => {
             Logout
           </li>
 
-          <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer rounded-md">
+          <li className="p-2 hover:bg-amber-100 hover:text-[#a31212] hover:font-bold cursor-pointer rounded-md" onClick={() => dispatch(openModal({ modalName: "deleteUser" }))}>
             Delete account
           </li>
         </ul>

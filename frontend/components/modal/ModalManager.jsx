@@ -15,6 +15,8 @@ import AdminAccessModal from "./AdminAccessModal";
 import SubscriptionDataModal from "./SubscriptionDataModal";
 import RenewPackageModal from "./RenewPackageModal";
 import ChangePackageModal from "./ChangePackageModal";
+import ViewSubscriptionModal from "./ViewSubscribtionModal";
+import DeleteUserModal from "./DeleteUserModal";
 
 const ModalManager = () => {
   const { modalName, isOpen, data } = useSelector((state) => state.modal);
@@ -55,7 +57,10 @@ const ModalManager = () => {
       return <RenewPackageModal onClose={handleClose} />;
     case "changePackage":
       return <ChangePackageModal onClose={handleClose} />;
-
+    case "viewSbuscription":
+      return <ViewSubscriptionModal onClose={handleClose} />;
+    case "deleteUser":
+      return <DeleteUserModal onClose={handleClose} />;
     default:
       return null;
   }

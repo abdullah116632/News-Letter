@@ -35,32 +35,42 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-export const logoutUser = createAsyncThunk("user/logout", async (_, thunkAPI) => {
-  try{
-    const response = await api.post("/auth/logout");
-    return null;
-  }catch(err){
-    const message =
+export const logoutUser = createAsyncThunk(
+  "user/logout",
+  async (_, thunkAPI) => {
+    try {
+      const response = await api.post("/auth/logout");
+      return null;
+    } catch (err) {
+      const message =
         err.response?.data?.message || err.message || "Logout failed";
       return thunkAPI.rejectWithValue(message);
+    }
   }
-})
+);
 
-export const updatePassword = createAsyncThunk("user/updatePassword", async (data, thunkAPI) => {
-  try{
-    const response = await api.post("/auth/update-password", data, {
-      headers: { "Content-Type": "application/json" },
-    })
-    return response.data.message;
-  }catch(error){
-    const message =
-        error.response?.data?.message || error.message || "update password failed";
+export const updatePassword = createAsyncThunk(
+  "user/updatePassword",
+  async (data, thunkAPI) => {
+    try {
+      const response = await api.post("/auth/update-password", data, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.data.message;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "update password failed";
       return thunkAPI.rejectWithValue(message);
+    }
   }
-})
+);
 
-export const updateUserProfile = createAsyncThunk("user/updateUser", async (data, thunkAPI) => {
-  try {
+export const updateUserProfile = createAsyncThunk(
+  "user/updateUser",
+  async (data, thunkAPI) => {
+    try {
       const response = await api.patch("/user", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -70,49 +80,88 @@ export const updateUserProfile = createAsyncThunk("user/updateUser", async (data
         error.response?.data?.message || error.message || "Update failed";
       return thunkAPI.rejectWithValue(message);
     }
-})
+  }
+);
 
 // Send OTP to email
-export const forgotPassword = createAsyncThunk("user/forgotPassword", async (email, thunkAPI) => {
-  try {
-    const response = await api.post("/auth/forgot-password", { email }, {
-      headers: { "Content-Type": "application/json" },
-    });
-    return response.data.message;
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || "Failed to send OTP";
-    return thunkAPI.rejectWithValue(message);
+export const forgotPassword = createAsyncThunk(
+  "user/forgotPassword",
+  async (email, thunkAPI) => {
+    try {
+      const response = await api.post(
+        "/auth/forgot-password",
+        { email },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      return response.data.message;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || error.message || "Failed to send OTP";
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 // Verify OTP
-export const verifyOtp = createAsyncThunk("user/verifyOtp", async (data, thunkAPI) => {
-  try {
-    const response = await api.post("/auth/verify-otp", data, {
-      headers: { "Content-Type": "application/json" },
-    }); // { email, otp }
-    return response.data.message;
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || "OTP verification failed";
-    return thunkAPI.rejectWithValue(message);
+export const verifyOtp = createAsyncThunk(
+  "user/verifyOtp",
+  async (data, thunkAPI) => {
+    try {
+      const response = await api.post("/auth/verify-otp", data, {
+        headers: { "Content-Type": "application/json" },
+      }); // { email, otp }
+      return response.data.message;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "OTP verification failed";
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 // Reset Password
-export const resetPassword = createAsyncThunk("user/resetPassword", async (data, thunkAPI) => {
-  try {
-    const response = await api.post("/auth/reset-password", data, {
-      headers: { "Content-Type": "application/json" },
-    }); // { email, otp, newPassword, confirmPassword }
-    console.log(response)
-    return response.data.message;
-  } catch (error) {
-    const message = error.response?.data?.message || error.message || "Password reset failed";
-    return thunkAPI.rejectWithValue(message);
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async (data, thunkAPI) => {
+    try {
+      const response = await api.post("/auth/reset-password", data, {
+        headers: { "Content-Type": "application/json" },
+      }); // { email, otp, newPassword, confirmPassword }
+      console.log(response);
+      return response.data.message;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Password reset failed";
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
+export const deleteUser = createAsyncThunk(
+  "user/deleteUser",
+  async (password, thunkAPI) => {
+    try {
+      const response = await api.delete("/auth/", {
+        data: { password },
+        headers: { "Content-Type": "application/json" },
+      });
 
+      return null; // or just return null
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Delete account failed";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 const storedUser =
   typeof window !== "undefined" ? localStorage.getItem("user") : null;
@@ -163,7 +212,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
 
       //logout
       .addCase(logoutUser.pending, (state) => {
@@ -243,8 +291,22 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Delete user
+      .addCase(deleteUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        localStorage.removeItem("user");
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
-
 
 export default authSlice.reducer;

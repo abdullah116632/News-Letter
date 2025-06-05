@@ -54,9 +54,9 @@ export const signup = async (req, res, next) => {
     await newUser.save();
     generateTokenAndSetToken(newUser._id, res);
 
-    console.log(newUser)
+    console.log(newUser);
 
-    await sendEmail("signup", {user:newUser});
+    await sendEmail("signup", { user: newUser });
 
     const userResponse = newUser.toObject();
     delete userResponse.password;
@@ -190,11 +190,11 @@ export const forgotPassword = async (req, res, next) => {
 
     await Otp.create({ email, otp, expiresAt });
 
-    await sendEmail("otp", {user, otp});
+    await sendEmail("otp", { user, otp });
 
     res.status(200).json({ success: true, message: "OTP sent to email" });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     next(err);
   }
 };
@@ -202,7 +202,8 @@ export const forgotPassword = async (req, res, next) => {
 export const verifyOtp = async (req, res, next) => {
   try {
     const { email, otp } = req.body;
-    if (!email || !otp) return next(new CustomError(400, "Email and OTP required"));
+    if (!email || !otp)
+      return next(new CustomError(400, "Email and OTP required"));
 
     const record = await Otp.findOne({ email, otp });
     if (!record) return next(new CustomError(400, "Invalid OTP"));
@@ -243,10 +244,14 @@ export const resetPassword = async (req, res, next) => {
     }
 
     if (!record.isverifyed) {
-      return next(new CustomError(403, "OTP not verified. Please verify first."));
+      return next(
+        new CustomError(403, "OTP not verified. Please verify first.")
+      );
     }
 
-    const user = await User.findOne({ email }).select("+password +confirmPassword");
+    const user = await User.findOne({ email }).select(
+      "+password +confirmPassword"
+    );
     if (!user) return next(new CustomError(404, "User not found"));
 
     // Set & save password
@@ -272,4 +277,41 @@ export const resetPassword = async (req, res, next) => {
   }
 };
 
+export const deleteUser = async (req, res) => {
+  const userId = req.user._id;
+  const { password } = req.body;
 
+  if (!password) {
+    return res.status(400).json({ message: "Password is required" });
+  }
+
+  try {
+    const user = await User.findById(userId).select("+password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isMatch = await compareString(password, user.password);
+    if (!isMatch)
+      return res.status(401).json({ message: "Incorrect password" });
+
+    // Delete user
+    await User.findByIdAndDelete(userId);
+
+    // Clear login cookie (logout)
+    res.cookie("jwt", "", {
+      maxAge: 0,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "User deleted and logged out successfully",
+      data: null,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
