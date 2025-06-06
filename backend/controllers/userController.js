@@ -115,6 +115,41 @@ export const updateProfile = async (req, res, next) => {
   }
 };
 
+export const updateSkills = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const {skills} = req.body;
+
+    if (!Array.isArray(skills)) {
+      return res.status(400).json({ message: "Skills must be an array" });
+    }
+
+    if (skills.length > 20) {
+      return res.status(400).json({ message: "You can add up to 20 skills only" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { skills },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        user: updatedUser,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating skills:", error);
+    next(error);
+  }
+};
+
 export const getAllUser = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;

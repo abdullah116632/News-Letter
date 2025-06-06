@@ -8,27 +8,32 @@ import ReviewForm from "@/components/profileRoute/ReviewForm";
 import api from "@/lib/client-axios";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchActiveSubscription } from "@/redux/slices/subscriptionSlice";
+import { openModal } from "@/redux/slices/modalSlice";
 
 const UserProfile = () => {
-  const [profileData, setProfileData] = useState(null);
-  const dispatch = useDispatch()
-  const {data} = useSelector((state) => state.subscriptionData)
+  const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.subscriptionData);
+  const {user:profileData} = useSelector((state) => state.authData);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get("/user/");
-        setProfileData(response.data.data.user);
-      } catch (err) {
-        console.error("Error fetching profile:", err);
-        router.push("/");
-      }
-    };
+  const MAX_SKILLS = 20;
 
-    fetchData();
+  let skills = Array.isArray(profileData?.skills) ? profileData.skills : [];
+  const hasSkills = skills.length > 0;
+
+  let col1 = [],
+    col2 = [];
+
+    if(hasSkills){
+    const half = Math.ceil(Math.min(skills.length, MAX_SKILLS) / 2);
+    col1 = skills.slice(0, half);
+    col2 = skills.slice(half, MAX_SKILLS);
+      }
+
+  useEffect(() => {
     dispatch(fetchActiveSubscription());
   }, []);
+
 
   if (!profileData) return <div className="text-white p-10">Loading...</div>;
 
@@ -45,33 +50,33 @@ const UserProfile = () => {
         <ReviewForm subscriptionData={data} />
 
         <div className="border-2 border-white/30 p-6 rounded-xl bg-cover bg-center relative overflow-hidden">
+          <button
+            onClick={() =>
+              dispatch(openModal({ modalName: "updateSkills", data: skills }))
+            }
+            className="absolute top-2 right-2 bg-white/10 text-white border border-white/30 px-3 py-1 rounded hover:bg-white/20 transition cursor-pointer"
+          >
+            Edit
+          </button>
           <h2 className="text-2xl font-bold text-red-400 mb-4">YOUR SKILLS</h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <ul className="space-y-1">
-              <li>Presentation Slide Making</li>
-              <li>Graphics Design</li>
-              <li>Video Editing</li>
-              <li>Motion Graphics Design</li>
-              <li>Poster Design</li>
-              <li>Academic Paper writing</li>
-              <li>Scientific Paper Writing</li>
-              <li>Scientific Figure Making</li>
-              <li>Cv making</li>
-              <li>UI/UX Design</li>
-            </ul>
-            <ul className="space-y-1">
-              <li>Data visualization</li>
-              <li>Content Writing</li>
-              <li>Data Analysis( R )</li>
-              <li>Motion Graphics Design</li>
-              <li>Poster Design</li>
-              <li>Academic Paper writing</li>
-              <li>Scientific Paper Writing</li>
-              <li>Scientific Figure Making</li>
-              <li>CV making</li>
-              <li>UI/UX Design</li>
-            </ul>
-          </div>
+          {hasSkills ? (
+            <div className="grid grid-cols-2 gap-4 text-sm text-white">
+              <ul className="space-y-1">
+                {col1.map((skill, index) => (
+                  <li key={index}>{skill}</li>
+                ))}
+              </ul>
+              <ul className="space-y-1">
+                {col2.map((skill, index) => (
+                  <li key={index + col1.length}>{skill}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="text-white/70 italic">
+              No skills added. Click the "Edit" button to add your skills.
+            </p>
+          )}
         </div>
       </div>
     </div>

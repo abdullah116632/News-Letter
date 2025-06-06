@@ -2,7 +2,6 @@ import Image from "next/image";
 import UpdatePopUpButton from "./UpdatePopUpButton";
 
 const profileCard = ({ profileData, subscriptionData }) => {
-  console.log("profile", profileData);
 
   if (!profileData) {
     return <div>Loading failed or no user data available.</div>;

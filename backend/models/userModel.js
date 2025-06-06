@@ -80,6 +80,7 @@ const userSchema = new mongoose.Schema(
     skills: {
       type: [String],
       default: [],
+      validate: [arrayLimit, '{PATH} exceeds the limit of 10']
     },
     isVerified: {
       type: Boolean,
@@ -96,6 +97,10 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+function arrayLimit(val) {
+  return val.length <= 20;
+}
 
 userSchema.pre("save", async function(next){
     if (!this.isModified('password')) {

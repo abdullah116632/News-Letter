@@ -181,6 +181,23 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
+export const updateSkills = createAsyncThunk(
+  "profile/updateSkills",
+  async (skills, { rejectWithValue }) => {
+    try {
+      const response = await api.put("/user/update-skills", {skills}, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      return response.data.data.user;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update skills"
+      );
+    }
+  }
+);
+
 const storedUser =
   typeof window !== "undefined" ? localStorage.getItem("user") : null;
 
@@ -349,6 +366,22 @@ const authSlice = createSlice({
       .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // update skills
+      .addCase(updateSkills.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateSkills.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      })
+      .addCase(updateSkills.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Something went wrong";
       });
   },
 });
