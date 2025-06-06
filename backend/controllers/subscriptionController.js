@@ -3,14 +3,16 @@ import axios from "axios";
 import Subscription from "../models/subscriptionModel.js";
 import User from "../models/userModel.js";
 import sendEmail from "../utils/sendMail.js";
+import {
+  createSubscriptionMailHtml,
+  createUpdateSubscriptionMailHtml,
+} from "../utils/mailHtml.js";
+import ServicePlan from "../models/servicePlanModal.js";
 
 // INITIATE PAYMENT
 export const subscribe = async (req, res) => {
   const { price, servicePlanId } = req.body;
   const { _id, fullName, email } = req.user;
-
-  console.log(process.env.UDDOKTAPAY_CHECKOUT_API_URL);
-  console.log(process.env.UDDOKTAPAY_API_KEY);
 
   if (!Number.isFinite(price) || price <= 0 || !servicePlanId) {
     return res.status(400).json({ success: false, message: "Invalid input" });
@@ -147,13 +149,18 @@ export const updatePackageWithCharge = async (req, res) => {
 export const updatePackageForFree = async (req, res) => {
   try {
     const { subscriptionId } = req.params;
-    const { servicePlanId } = req.body;
+    const { servicePlanId, price } = req.body;
 
     if (!servicePlanId) {
-      return res.status(400).json({ success: false, message: "Service Plan ID is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Service Plan ID is required" });
     }
 
-    const subscription = await Subscription.findById(subscriptionId);
+    const subscription = await Subscription.findById(subscriptionId).populate(
+      "user",
+      "fullName email"
+    );
 
     if (!subscription) {
       return res
@@ -163,7 +170,19 @@ export const updatePackageForFree = async (req, res) => {
 
     subscription.servicePlan = servicePlanId;
     subscription.status = "pending";
+    subscription.price = price;
     await subscription.save();
+
+    console.log(subscription)
+
+    const mailHtml = createUpdateSubscriptionMailHtml({
+      fullName: subscription.user.fullName,
+      startingDate: subscription.startingDate,
+      endingDate: subscription.endingDate,
+    });
+    const mailSubject = "Your Subscription Has Been Successfully Updated!";
+
+    await sendEmail(subscription.user.email, mailSubject, mailHtml);
 
     res.status(200).json({ success: true, data: subscription });
   } catch (error) {
@@ -205,21 +224,44 @@ export const handleSuccess = async (req, res) => {
     }
 
     if (subscriptionType === "subscribe") {
-      await Subscription.findByIdAndUpdate(
+      const updatedSubscription = await Subscription.findByIdAndUpdate(
         subscribtionId,
         { paid: true, invoiceId },
         { runValidators: false, new: true }
-      );
+      ).populate("user", "fullName email");
+
+      const mailHtml = createSubscriptionMailHtml({
+        fullName: updatedSubscription.user.fullName,
+        startingDate: updatedSubscription.startingDate,
+        endingDate: updatedSubscription.endingDate,
+      });
+      const mailSubject = "Subscription Confirmed!";
+
+      await sendEmail(updatedSubscription.user.email, mailSubject, mailHtml);
     } else if (subscriptionType === "update") {
-      await Subscription.findByIdAndUpdate(
+      const service = await ServicePlan.findById(servicePlanId)
+
+      const updatedSubscription = await Subscription.findByIdAndUpdate(
         subscribtionId,
         {
           servicePlan: servicePlanId,
           invoiceId,
-          status: "pending"
+          status: "pending",
+          price: service.price
         },
         { runValidators: false, new: true }
-      );
+      ).populate("user", "fullName email");
+
+      
+
+      const mailHtml = createUpdateSubscriptionMailHtml({
+        fullName: updatedSubscription.user.fullName,
+        startingDate: updatedSubscription.startingDate,
+        endingDate: updatedSubscription.endingDate,
+      });
+      const mailSubject = "Your Subscription Has Been Successfully Updated!";
+
+      await sendEmail(updatedSubscription.user.email, mailSubject, mailHtml);
     } else {
       res.status(400).json({ success: false, message: "invalid metadata" });
     }
@@ -308,6 +350,3 @@ export const getActiveSubscription = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
-
-
-

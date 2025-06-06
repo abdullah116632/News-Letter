@@ -26,8 +26,8 @@ const Footer = () => {
       </section>
 
       {/* New Product Section */}
-      <section className="max-w-6xl mx-auto flex items-center justify-center gap-5 mb-5 sm:mb-7">
-        <span className="text-4xl font-bold text-pink-700">A Product Of </span>
+      <section className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-3 mb-5 sm:mb-7">
+        <span className="sm:text-xl lg:text-4xl font-sans tracking-wider text-white">A Product Of </span>
         <Image
           src="/images/motherBrand.png" // your logo in /public folder
           alt="Company Logo"

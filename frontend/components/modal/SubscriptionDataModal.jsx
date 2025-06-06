@@ -16,6 +16,7 @@ const SubscriptionDataModal = ({ data: modalData, onClose }) => {
     modalData.activeSubscription || {};
   const clickedServicePrice = modalData.clickedServicePrice;
   const clickedServiceId = modalData.clickedServiceId;
+  console.log(clickedServicePrice)
 
   const [loadingRenew, setLoadingRenew] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
@@ -50,9 +51,10 @@ const SubscriptionDataModal = ({ data: modalData, onClose }) => {
     try {
       if (newPrice === currentPrice || newPrice < currentPrice) {
         await dispatch(
-          updatePackageForFree({ subscriptionId, servicePlanId: newPlanId })
+          updatePackageForFree({ subscriptionId, servicePlanId: newPlanId, price: newPrice })
         ).unwrap();
         toast.success("Package updated successfully for free.");
+        onClose()
       } else {
         const priceDifference = newPrice - currentPrice;
         const result = await dispatch(

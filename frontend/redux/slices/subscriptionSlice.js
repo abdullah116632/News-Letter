@@ -65,12 +65,12 @@ export const updatePackageWithCharge = createAsyncThunk(
 
 export const updatePackageForFree = createAsyncThunk(
   "subscription/updateFree",
-  async ({ subscriptionId, servicePlanId }, thunkAPI) => {
+  async ({ subscriptionId, servicePlanId, price }, thunkAPI) => {
     console.log("slice",subscriptionId, servicePlanId)
     try {
       const res = await api.patch(
         `/subscription/update-package/free/${subscriptionId}`,
-        { servicePlanId },
+        { servicePlanId, price },
         {
           headers: {
             "Content-Type": "application/json",

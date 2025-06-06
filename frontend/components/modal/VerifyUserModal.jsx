@@ -21,6 +21,7 @@ const VerifyUserModal = ({onClose, email}) => {
     try {
       await dispatch(verifyUser({ otp, email: email })).unwrap();
       toast.success("user verified");
+      onClose()
     } catch (err) {
       toast.error(err);
     }

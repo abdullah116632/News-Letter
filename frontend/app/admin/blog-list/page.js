@@ -57,9 +57,9 @@ const BlogList = () => {
       <h2 className="text-2xl font-bold mb-6 text-red-400">All Blogs</h2>
 
       <div className="space-y-6">
-        {blogs.map((blog) => (
+        {blogs?.map((blog) => (
           <div
-            key={blog._id}
+            key={blog?._id}
             className="bg-gray-900 border border-white/10 p-4 rounded-xl flex flex-col md:flex-row gap-4 items-start"
           >
             {/* Image */}

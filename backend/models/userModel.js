@@ -87,7 +87,7 @@ const userSchema = new mongoose.Schema(
     },
     isAdded: {
       type: Boolean,
-      default: true
+      default: false
     },
     isAdmin : {
       type: Boolean,

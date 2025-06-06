@@ -20,8 +20,9 @@ const RenewPackageModal = ({ onClose }) => {
         <h2 className="text-2xl font-bold text-center mb-4 text-blue-700">
           Subscribe Again
         </h2>
-        <p className="text-center text-sm text-gray-800 mb-6">
-          Please go to the home page and buy the same package again to continue.
+        <p className="text-center text-sm xl:text-lg text-gray-800 mb-6">
+          Please return to the home page and click "Buy Now" on the same package
+          to continue your subscription.
         </p>
 
         {/* Go to Home Button */}

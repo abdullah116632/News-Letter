@@ -36,8 +36,8 @@ const BlogDetails = async ({ params }) => {
       <div className="w-full flex flex-col lg:flex-row">
         <div className="w-full lg:w-1/2">
           <Image
-            src={blog.img}
-            alt={blog.title}
+            src={blog?.img || "/images/default-blog.jpg"}
+            alt={blog?.title}
             width={800}
             height={500}
             className="rounded-xl shadow-xl object-cover w-full max-h-[600px]"
@@ -48,13 +48,13 @@ const BlogDetails = async ({ params }) => {
 
       {/* Title */}
       <h1 className="mt-10 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-roboto bg-gradient-to-r from-[#FF00FB] via-[#9B00FF] to-[#00D9FF] bg-clip-text text-transparent">
-        {blog.title}
+        {blog?.title}
       </h1>
 
       {/* Description */}
       <div className="mt-6">
         <p className="text-base sm:text-lg md:text-xl text-gray-200 leading-relaxed font-roboto">
-          {blog.description}
+          {blog?.description}
         </p>
       </div>
     </div>

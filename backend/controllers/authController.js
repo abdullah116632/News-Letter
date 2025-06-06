@@ -6,6 +6,7 @@ import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import compareString from "../utils/conpareString.js";
 import Otp from "../models/otpModel.js";
 import sendEmail from "../utils/sendMail.js";
+import { createOtpMailHtmlForForgetPassword, createSignupMailHtml, createVerifyEmailHtml } from "../utils/mailHtml.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -68,10 +69,10 @@ export const signup = async (req, res, next) => {
       expiresAt,
     });
 
-    await sendEmail("subscription", {
-      user: newUser,
-      otp,
-    });
+    const mailHtml = createVerifyEmailHtml({fullName, otp})
+    const mailSubject = "Your email verification otp"
+
+    await sendEmail(email, mailSubject, mailHtml);
 
     const userResponse = newUser.toObject();
     delete userResponse.password;
@@ -121,10 +122,10 @@ export const verifyUser = async (req, res, next) => {
     // Set JWT token
     generateTokenAndSetToken(user._id, res);
 
-    await sendEmail("signup", {
-      user,
-      otp,
-    });
+    const mailHtml = createSignupMailHtml({fullName: user.fullName})
+    const mailSubject = "Welcome to Our Opt.national!";
+
+    await sendEmail(email, mailSubject, mailHtml);
 
     const userResponse = user.toObject();
     delete userResponse.password;
@@ -259,7 +260,10 @@ export const forgotPassword = async (req, res, next) => {
 
     await Otp.create({ email, otp, expiresAt });
 
-    await sendEmail("otp", { user, otp });
+    const mailHtml = createOtpMailHtmlForForgetPassword({fullName, otp})
+    const mailSubject = "Your Password Reset OTP";
+
+    await sendEmail(email, mailSubject, mailHtml);
 
     res.status(200).json({ success: true, message: "OTP sent to email" });
   } catch (err) {

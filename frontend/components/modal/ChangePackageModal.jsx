@@ -20,9 +20,9 @@ const ChangePackageModal = ({ onClose }) => {
         <h2 className="text-2xl font-bold text-center mb-4 text-blue-700">
           Choose a New Package
         </h2>
-        <p className="text-center text-sm text-gray-800 mb-6">
-          Please go to the home page and buy another package to continue using
-          our services.
+        <p className="text-center text-sm xl:text-lg text-gray-800 mb-6">
+          Please go to the home page and click "Buy Now" on a different package
+          to change your current plan.
         </p>
 
         {/* Go to Home Button */}
