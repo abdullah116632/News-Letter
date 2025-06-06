@@ -35,7 +35,6 @@ const ProfileCard = ({ profileData, subscriptionData }) => {
           <h2 className="text-2xl md:text-3xl font-bold mt-4">
             {renderValue(profileData?.fullName)}
           </h2>
-          <p className="text-sm my-2">{renderValue(profileData?.profession)}</p>
           <div className="mt-2 text-sm">
             <p className="flex">
               <span className="min-w-36">Email</span>
@@ -84,7 +83,7 @@ const ProfileCard = ({ profileData, subscriptionData }) => {
           {[
             { label: "Profession", value: profileData?.profession },
             { label: "Occupation", value: profileData?.occupation },
-            { label: "Institution", value: profileData?.institution },
+            { label: "Institution", value: profileData?.institute },
             { label: "Field of Study / Major", value: profileData?.fieldOfStudy },
             { label: "Subject of Interest", value: profileData?.interests },
             {

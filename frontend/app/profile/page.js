@@ -32,7 +32,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     dispatch(fetchActiveSubscription());
-  }, []);
+  }, [dispatch]);
 
 
   if (!profileData) return <div className="text-white p-10">Loading...</div>;
@@ -74,7 +74,7 @@ const UserProfile = () => {
             </div>
           ) : (
             <p className="text-white/70 italic">
-              No skills added. Click the "Edit" button to add your skills.
+              No skills added. Click the &quot;Edit&quot; button to add your skills.
             </p>
           )}
         </div>
