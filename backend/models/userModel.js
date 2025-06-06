@@ -14,12 +14,6 @@ const userSchema = new mongoose.Schema(
       required: [true, "name is required"],
       maxlength: [20, "name cannot exceed 20 characters"],
     },
-    profession: {
-      type: String,
-    },
-    occupation: {
-      type: String,
-    },
     email: {
       type: String,
       required: [true, "email is required"],
@@ -43,16 +37,20 @@ const userSchema = new mongoose.Schema(
         message: "Password & Confirm password must be same",
       },
     },
+    profession: {
+      type: String,
+    },
+    occupation: {
+      type: String,
+    },
     institute: {
       type: String,
     },
     fieldOfStudy: {
-      type: [String],
-      default: []
+      type: String,
     },
     interests: {
-      type: [String], // Array of strings
-      default: [],
+      type: String,
     },
     priorResearchExperience: {
       type: Boolean,
@@ -66,16 +64,13 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     countrypreference: {
-      type: [String],
-      default: [],
+      type: String,
     },
     internshipJobPreferences: {
-      type: [String],
-      default: []
+      type: String,
     },
     preferredFieldsofOpportunity: {
-      type: [String],
-      default: []
+      type: String,
     },
     skills: {
       type: [String],

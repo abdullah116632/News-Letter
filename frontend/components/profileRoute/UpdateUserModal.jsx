@@ -7,7 +7,7 @@ import { updateUserProfile } from "@/redux/slices/authSlice";
 
 const UpdateUserModal = ({ onClose }) => {
   const dispatch = useDispatch();
-  const {user} = useSelector(state => state.authData);
+  const { user } = useSelector((state) => state.authData);
   const fileInputRef = useRef();
 
   const [formData, setFormData] = useState({
@@ -17,15 +17,14 @@ const UpdateUserModal = ({ onClose }) => {
     profession: "",
     occupation: "",
     institute: "",
-    fieldOfStudy: [],
-    interests: [],
+    fieldOfStudy: "",
+    interests: "",
     priorResearchExperience: "",
     englishProficiency: "",
     preferredDegree: "",
-    countrypreference: [],
-    internshipJobPreferences: [],
-    preferredFieldsofOpportunity: [],
-    skills: [],
+    countrypreference: "",
+    internshipJobPreferences: "",
+    preferredFieldsofOpportunity: "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -34,8 +33,26 @@ const UpdateUserModal = ({ onClose }) => {
   useEffect(() => {
     if (user) {
       setFormData({
-        ...formData,
-        ...user,
+        fullName: user.fullName || "",
+        email: user.email || "",
+        img: user.img || "",
+        profession: user.profession || "",
+        occupation: user.occupation || "",
+        institute: user.institute || "",
+        fieldOfStudy: user.fieldOfStudy || "",
+        interests: user.interests || "",
+        countrypreference: user.countrypreference || "",
+        internshipJobPreferences: user.internshipJobPreferences || "",
+        preferredFieldsofOpportunity: user.preferredFieldsofOpportunity || "",
+        priorResearchExperience:
+          typeof user.priorResearchExperience === "boolean"
+            ? user.priorResearchExperience.toString()
+            : "",
+        englishProficiency:
+          typeof user.englishProficiency === "boolean"
+            ? user.englishProficiency.toString()
+            : "",
+        preferredDegree: user.preferredDegree || "",
       });
       setPreviewFileUrl(user.img || "/images/userprofile.png");
     }
@@ -49,13 +66,6 @@ const UpdateUserModal = ({ onClose }) => {
     }));
   };
 
-  const handleMultiChange = (e, key) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: e.target.value.split(",").map((s) => s.trim()),
-    }));
-  };
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -66,12 +76,14 @@ const UpdateUserModal = ({ onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData)
+
     const data = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        data.append(key, JSON.stringify(value));
+      if (key === "priorResearchExperience" || key === "englishProficiency") {
+        if (value === "true" || value === "false") {
+          data.append(key, value === "true"); // convert to boolean
+        }
       } else {
         data.append(key, value);
       }
@@ -86,13 +98,12 @@ const UpdateUserModal = ({ onClose }) => {
       toast.success("Profile updated successfully!");
       onClose();
     } catch (err) {
-      console.log(err)
       toast.error(err?.message || "Update failed");
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 overflow-y-auto hide-scrollbar">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 overflow-y-auto">
       <div className="bg-gradient-to-br from-white/90 via-blue-100 to-purple-100 w-full max-w-2xl rounded-2xl p-8 shadow-2xl relative text-black">
         <button
           onClick={onClose}
@@ -103,7 +114,6 @@ const UpdateUserModal = ({ onClose }) => {
 
         <h2 className="text-2xl font-bold text-center mb-6">Update Your Profile</h2>
 
-        {/* Profile Image */}
         <div className="flex justify-center mb-4">
           <div
             className="w-24 h-24 rounded-full bg-gray-200 cursor-pointer border-2 border-gray-400 overflow-hidden"
@@ -138,7 +148,7 @@ const UpdateUserModal = ({ onClose }) => {
             type="email"
             name="email"
             value={formData.email}
-            readOnly
+            disabled
             className="px-4 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
           />
 
@@ -146,7 +156,7 @@ const UpdateUserModal = ({ onClose }) => {
             type="text"
             name="profession"
             placeholder="Profession"
-            value={formData.profession || ""}
+            value={formData.profession}
             onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
@@ -155,17 +165,16 @@ const UpdateUserModal = ({ onClose }) => {
             type="text"
             name="occupation"
             placeholder="Occupation"
-            value={formData.occupation || ""}
+            value={formData.occupation}
             onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
-
 
           <input
             type="text"
             name="institute"
             placeholder="Institute"
-            value={formData.institute || ""}
+            value={formData.institute}
             onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
@@ -174,83 +183,79 @@ const UpdateUserModal = ({ onClose }) => {
             type="text"
             name="preferredDegree"
             placeholder="Preferred Degree"
-            value={formData.preferredDegree || ""}
+            value={formData.preferredDegree}
             onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
 
-          {/* Multi-field inputs */}
           <input
             type="text"
+            name="fieldOfStudy"
             placeholder="Field of Study (comma-separated)"
-            value={formData.fieldOfStudy.join(", ")}
-            onChange={(e) => handleMultiChange(e, "fieldOfStudy")}
+            value={formData.fieldOfStudy}
+            onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
 
           <input
             type="text"
+            name="interests"
             placeholder="Interests (comma-separated)"
-            value={formData.interests.join(", ")}
-            onChange={(e) => handleMultiChange(e, "interests")}
+            value={formData.interests}
+            onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
 
           <input
             type="text"
+            name="countrypreference"
             placeholder="Country Preferences (comma-separated)"
-            value={formData.countrypreference.join(", ")}
-            onChange={(e) => handleMultiChange(e, "countrypreference")}
+            value={formData.countrypreference}
+            onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
 
           <input
             type="text"
+            name="internshipJobPreferences"
             placeholder="Internship/Job Preferences (comma-separated)"
-            value={formData.internshipJobPreferences.join(", ")}
-            onChange={(e) => handleMultiChange(e, "internshipJobPreferences")}
+            value={formData.internshipJobPreferences}
+            onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
 
           <input
             type="text"
+            name="preferredFieldsofOpportunity"
             placeholder="Preferred Fields of Opportunity (comma-separated)"
-            value={formData.preferredFieldsofOpportunity.join(", ")}
-            onChange={(e) => handleMultiChange(e, "preferredFieldsofOpportunity")}
-            className="px-4 py-2 border rounded-md"
-          />
-
-          <input
-            type="text"
-            placeholder="Skills (comma-separated)"
-            value={formData.skills.join(", ")}
-            onChange={(e) => handleMultiChange(e, "skills")}
+            value={formData.preferredFieldsofOpportunity}
+            onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           />
 
           <select
             name="priorResearchExperience"
-            value={formData.priorResearchExperience || ""}
+            value={formData.priorResearchExperience}
             onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           >
             <option value="">Prior Research Experience?</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
           </select>
 
           <select
             name="englishProficiency"
-            value={formData.englishProficiency || ""}
+            value={formData.englishProficiency}
             onChange={handleChange}
             className="px-4 py-2 border rounded-md"
           >
             <option value="">English Proficiency?</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
           </select>
 
-          <div className="col-span-full flex justify-end">
+          <div className="col-span-full flex justify-end mt-2">
             <button
               type="submit"
               className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700"

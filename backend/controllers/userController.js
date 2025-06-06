@@ -54,7 +54,6 @@ export const getUserByEmail = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
-    console.log(req.body);
     const { fullName } = req.body;
     if (!fullName) {
       return next(new CustomError(400, "full name is required"));

@@ -1,16 +1,27 @@
 import Image from "next/image";
 import UpdatePopUpButton from "./UpdatePopUpButton";
 
-const profileCard = ({ profileData, subscriptionData }) => {
-
+const ProfileCard = ({ profileData, subscriptionData }) => {
   if (!profileData) {
     return <div>Loading failed or no user data available.</div>;
   }
 
+  const renderValue = (value) => {
+    if (Array.isArray(value)) return value.join(", ");
+    return value || "";
+  };
+
+  const renderBoolean = (value) => {
+    if (value === true) return "Yes";
+    if (value === false) return "No";
+    return "";
+  };
+
   return (
     <div className="relative bg-[#7C7C7C57] rounded-2xl shadow-xl p-6 md:p-10 flex flex-col md:flex-row justify-between items-center md:items-start gap-6 border-2 border-white/20">
-      {/* <UpdatePopUpButton /> */}
-      <div className="flex flex-col lg:flex-row gap-5 pr-12 pt-2.5 lg:border-r-2 w-full lg:w-1/2">
+      <UpdatePopUpButton />
+
+      <div className="flex flex-col lg:flex-row gap-5 pt-2.5  w-full lg:w-[40%]">
         <div className="flex flex-col items-center text-center md:text-left">
           <Image
             src={profileData?.img || "/images/userprofile.png"}
@@ -22,169 +33,87 @@ const profileCard = ({ profileData, subscriptionData }) => {
         </div>
         <div className="w-full lg:w-2/3">
           <h2 className="text-2xl md:text-3xl font-bold mt-4">
-            {profileData?.fullName}
+            {renderValue(profileData?.fullName)}
           </h2>
-          <p className="text-sm my-2">{profileData?.profession}</p>
+          <p className="text-sm my-2">{renderValue(profileData?.profession)}</p>
           <div className="mt-2 text-sm">
             <p className="flex">
               <span className="min-w-36">Email</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : {profileData?.email}
+                : {renderValue(profileData?.email)}
               </span>
             </p>
             <p className="flex">
               <span className="min-w-36">Active Package</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-                : {subscriptionData?.servicePlan?.title}
+                : {renderValue(subscriptionData?.servicePlan?.title)}
               </span>
             </p>
             <p className="flex">
               <span className="min-w-36">Starting Date</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
                 :{" "}
-                {new Date(subscriptionData?.startingDate).toLocaleDateString(
-                  "en-GB",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }
-                )}
+                {subscriptionData?.startingDate
+                  ? new Date(subscriptionData?.startingDate).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
+                  : ""}
               </span>
             </p>
             <p className="flex">
               <span className="min-w-36">Ending Date</span>
               <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
                 :{" "}
-                {new Date(subscriptionData?.endingDate).toLocaleDateString(
-                  "en-GB",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }
-                )}
+                {subscriptionData?.endingDate
+                  ? new Date(subscriptionData?.endingDate).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
+                  : ""}
               </span>
             </p>
           </div>
         </div>
       </div>
 
-      <div className="text-sm md:text-base w-full md:w-1/2">
+      <div className="text-sm md:text-base w-full md:w-1/2 pl-12 lg:border-l-2">
         <div className="grid grid-cols-1 gap-y-2 text-sm">
-          <div className="flex">
-            <span className="min-w-56">Occupation</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              : <span className="text-gray-300">{profileData?.occupation}</span>
-            </span>
-          </div>
-          <div className="flex">
-            <span className="min-w-56">Institution</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">{profileData?.institution}</span>
-            </span>
-          </div>
-          <div className="flex">
-            <span className="min-w-56">Field of Study / Major</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">
-                {Array.isArray(profileData?.fieldOfStudy)
-                  ? profileData.fieldOfStudy.join(", ")
-                  : profileData?.fieldOfStudy}
+          {[
+            { label: "Profession", value: profileData?.profession },
+            { label: "Occupation", value: profileData?.occupation },
+            { label: "Institution", value: profileData?.institution },
+            { label: "Field of Study / Major", value: profileData?.fieldOfStudy },
+            { label: "Subject of Interest", value: profileData?.interests },
+            {
+              label: "Prior Research Experience",
+              value: renderBoolean(profileData?.priorResearchExperience),
+            },
+            {
+              label: "English Proficiency",
+              value: renderBoolean(profileData?.englishProficiency),
+            },
+            { label: "Preferred Degree", value: profileData?.preferredDegree },
+            { label: "Country Preference", value: profileData?.countrypreference },
+            { label: "Internship/Job Preference", value: profileData?.internshipJobPreferences },
+            {
+              label: "Preferred Fields of Opportunity",
+              value: profileData?.preferredFieldsofOpportunity,
+            },
+          ].map(({ label, value }) => (
+            <div className="flex" key={label}>
+              <span className="min-w-56">{label}</span>
+              <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
+                : <span className="text-gray-300">{renderValue(value)}</span>
               </span>
-            </span>
-          </div>
-
-          <div className="flex">
-            <span className="min-w-56">Subject of Interest</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">
-                {Array.isArray(profileData?.interests)
-                  ? profileData.interests.join(", ")
-                  : profileData?.interests}
-              </span>
-            </span>
-          </div>
-
-          <div className="flex">
-            <span className="min-w-56">Prior Research Experience</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">
-                {profileData?.priorResearchExperience === true
-                  ? "Yes"
-                  : profileData?.priorResearchExperience === false
-                  ? "No"
-                  : ""}
-              </span>
-            </span>
-          </div>
-
-          <div className="flex">
-            <span className="min-w-56">English Proficiency</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">
-                {profileData?.englishProficiency === true
-                  ? "Yes"
-                  : profileData?.englishProficiency === false
-                  ? "No"
-                  : ""}
-              </span>
-            </span>
-          </div>
-
-          <div className="flex">
-            <span className="min-w-56">Preferred Degree</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">
-                {profileData?.preferredDegree}
-              </span>
-            </span>
-          </div>
-          <div className="flex">
-            <span className="min-w-56">Country Preference</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">
-                {Array.isArray(profileData?.countrypreference)
-                  ? profileData.countrypreference.join(", ")
-                  : profileData?.countrypreference}
-              </span>
-            </span>
-          </div>
-
-          <div className="flex">
-            <span className="min-w-56">Internship/Job Preference</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">
-                {Array.isArray(profileData?.internshipJobPreferences)
-                  ? profileData.internshipJobPreferences.join(", ")
-                  : profileData?.internshipJobPreferences}
-              </span>
-            </span>
-          </div>
-
-          <div className="flex">
-            <span className="min-w-56">Preferred Fields of Opportunity</span>
-            <span className="overflow-x-scroll hide-scrollbar whitespace-nowrap">
-              :{" "}
-              <span className="text-gray-300">
-                {Array.isArray(profileData?.preferredFieldsofOpportunity)
-                  ? profileData.preferredFieldsofOpportunity.join(", ")
-                  : profileData?.preferredFieldsofOpportunity}
-              </span>
-            </span>
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default profileCard;
+export default ProfileCard;
