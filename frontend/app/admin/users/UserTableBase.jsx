@@ -1,23 +1,9 @@
 // components/UserTableBase.jsx
 "use client";
 import React from "react";
-import {
-  FaCheckCircle,
-  FaTimesCircle,
-  FaCopy,
-  FaPlusCircle,
-  FaMinusCircle,
-} from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaCopy } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { openModal } from "@/redux/slices/modalSlice";
-import { toast } from "react-toastify";
-import { addUserToBrevo, removeUserFromBrevo } from "@/redux/slices/brevoSlice";
-import {
-  getActiveSubscribers,
-  getExpiredSubscribers,
-} from "@/redux/slices/usersSlice";
-import { usePathname } from "next/navigation";
-import { Link } from "lucide-react";
 import ActiveSubscriberNav from "./active/ActiveSubscriberNav";
 
 const UserTableBase = ({
@@ -32,7 +18,6 @@ const UserTableBase = ({
   showActiveSubscriberPage,
 }) => {
   const dispatch = useDispatch();
-  
 
   // const handleAddToBrevo = async (user) => {
   //   try {
@@ -66,14 +51,15 @@ const UserTableBase = ({
 
   return (
     <div className="overflow-x-auto bg-gray-950 rounded-b-2xl text-white p-6 shadow-lg">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-red-400">{heading}</h2>
-        {showActiveSubscriberPage && (
-          <ActiveSubscriberNav />
+      <div className="flex items-center justify-between mb-6 ">
+        <h2 className="text-sm lg:text-2xl font-bold text-red-400">{heading}</h2>
+        {showActiveSubscriberPage && <ActiveSubscriberNav />}
+        {copiedEmail === "all" && (
+          <span className="text-green-400 text-sm font-semibold">Copied!</span>
         )}
         <button
           onClick={handleCopyAll}
-          className="text-sm bg-emerald-400 hover:bg-gray-700 px-4 py-2 rounded-lg border border-white/10 cursor-pointer"
+          className="text-sm bg-emerald-400 hover:bg-gray-700 ml-1 lg:px-4 py-2 rounded-lg border border-white/10 cursor-pointer"
         >
           Copy All Emails
         </button>

@@ -47,7 +47,7 @@ const UserList = ({ children }) => {
           <FaUserCheck />
           Active
         </Link>
-        <Link
+        {/* <Link
           href="/admin/users/expired"
           className={`px-6 py-3 font-medium transition flex-1 flex gap-2 ${
             isActive("/admin/users/expired")
@@ -57,7 +57,7 @@ const UserList = ({ children }) => {
         >
           <FaUserTimes />
           Expires
-        </Link>
+        </Link> */}
       </div>
       <div>{children}</div>
     </div>

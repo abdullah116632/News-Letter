@@ -8,7 +8,7 @@ const ActiveSubscriberNav = () => {
 
   const isActive = (path) => pathname === path;
   return (
-    <div className="flex flex-wrap items-center overflow-hidden text-base lg:text-lg bg-emerald-500 rounded-xl shadow-md">
+    <div className="flex flex-wrap flex-col sm:flex-row items-center overflow-hidden text-base lg:text-lg bg-emerald-500 rounded-xl shadow-md">
   {[
     { href: "/admin/users/active", label: "All" },
     { href: "/admin/users/active/scholar-track", label: "ScholarTrack." },
@@ -18,7 +18,7 @@ const ActiveSubscriberNav = () => {
     <Link
       key={link.href}
       href={link.href}
-      className={` px-4 font-semibold text-center transition-colors ${
+      className={`px-4 font-semibold text-center transition-colors ${
         isActive(link.href)
           ? "bg-fuchsia-600 text-black"
           : "text-cyan-50 hover:bg-amber-500"

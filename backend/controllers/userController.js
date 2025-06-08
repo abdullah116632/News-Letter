@@ -315,9 +315,18 @@ export const getAllActiveSubscribers = async (req, res) => {
     const limit = 15;
     const skip = (page - 1) * limit;
 
-    const activeSubs = await Subscription.find({ status: "active", paid: true })
+    const today = new Date();
+
+    const activeSubs = await Subscription.find({
+      startingDate: { $lte: today },
+      endingDate: { $gte: today },
+      paid: true,
+    })
       .populate("user", "img fullName email isAdmin")
-      .populate("servicePlan", "title");
+      .populate("servicePlan", "title")
+      .skip(skip)
+      .limit(limit);
+
 
     const uniqueUsers = new Map();
     for (const sub of activeSubs) {
@@ -340,16 +349,13 @@ export const getAllActiveSubscribers = async (req, res) => {
       }
     }
 
-    const data = Array.from(uniqueUsers.values());
-    const paginated = data.slice(skip, skip + limit);
+    const subscriber = Array.from(uniqueUsers.values());
 
     res.status(200).json({
       success: true,
       data: {
-        total: data.length,
         currentPage: page,
-        totalPages: Math.ceil(data.length / limit),
-        users: paginated,
+        users: subscriber,
       },
     });
   } catch (error) {
@@ -445,9 +451,17 @@ const getActiveSubscribersByPlanTitle = async (planTitle, page = 1) => {
   const limit = 15;
   const skip = (page - 1) * limit;
 
-  const activeSubs = await Subscription.find({ status: "active", paid: true })
-    .populate("user", "img fullName email isAdmin")
-    .populate("servicePlan", "title");
+  const today = new Date();
+
+    const activeSubs = await Subscription.find({
+      startingDate: { $lte: today },
+      endingDate: { $gte: today },
+      paid: true,
+    })
+      .populate("user", "img fullName email isAdmin")
+      .populate("servicePlan", "title")
+      .skip(skip)
+      .limit(limit);
 
   const filtered = activeSubs.filter(
     (s) => s.servicePlan?.title === planTitle && s.user
@@ -468,12 +482,9 @@ const getActiveSubscribersByPlanTitle = async (planTitle, page = 1) => {
   }
 
   const allUsers = Array.from(uniqueUsersMap.values());
-  const paginated = allUsers.slice(skip, skip + limit);
 
   return {
-    total: allUsers.length,
     currentPage: page,
-    totalPages: Math.ceil(allUsers.length / limit),
-    users: paginated,
+    users: allUsers,
   };
 };
