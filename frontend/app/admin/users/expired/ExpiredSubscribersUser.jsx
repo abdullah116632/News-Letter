@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserTableBase from "../UserTableBase";
-import { getExpiredSubscribers } from "@/redux/slices/usersSlice";
+import { fetchExpiredSubscribers } from "@/redux/slices/usersSlice";
 
 const ExpiredSubscribersUser = () => {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ const ExpiredSubscribersUser = () => {
   const { users, loading, error } = useSelector((state) => state.usersData);
 
   useEffect(() => {
-    dispatch(getExpiredSubscribers(page));
+    dispatch(fetchExpiredSubscribers(page));
   }, [dispatch, page]);
 
   const handleCopy = (email) => {
@@ -35,12 +35,12 @@ const ExpiredSubscribersUser = () => {
       users={users}
       page={page}
       setPage={setPage}
-      heading="Active Subscribers"
+      heading="Expired Subscribers"
       copiedEmail={copiedEmail}
       setCopiedEmail={setCopiedEmail}
       handleCopy={handleCopy}
       handleCopyAll={handleCopyAll}
-      showBrevo={true}
+      showPackage={true}
     />
   );
 };

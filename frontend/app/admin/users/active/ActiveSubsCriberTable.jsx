@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getActiveSubscribers } from "@/redux/slices/usersSlice";
+import { fetchActiveSubscribers } from "@/redux/slices/usersSlice";
 import UserTableBase from "../UserTableBase";
 
 const ActiveSubscribersTable = () => {
@@ -11,7 +11,7 @@ const ActiveSubscribersTable = () => {
   const { users, loading, error } = useSelector((state) => state.usersData);
 
   useEffect(() => {
-    dispatch(getActiveSubscribers(page));
+    dispatch(fetchActiveSubscribers(page));
   }, [dispatch, page]);
 
   const handleCopy = (email) => {
@@ -40,8 +40,8 @@ const ActiveSubscribersTable = () => {
       setCopiedEmail={setCopiedEmail}
       handleCopy={handleCopy}
       handleCopyAll={handleCopyAll}
-      showBrevo={true}
-      showExpiresDate={true}
+      showPackage={true}
+      showActiveSubscriberPage={true}
     />
   );
 };

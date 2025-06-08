@@ -10,6 +10,8 @@ const AllSubscibersTable = () => {
   const [copiedEmail, setCopiedEmail] = useState(null);
   const { users, loading, error } = useSelector((state) => state.usersData);
 
+  console.log("subs",users);
+
   useEffect(() => {
     dispatch(getAllSubscribers(page));
   }, [dispatch, page]);
@@ -35,12 +37,11 @@ const AllSubscibersTable = () => {
       users={users}
       page={page}
       setPage={setPage}
-      heading="Active Subscribers"
+      heading="All Subscribers"
       copiedEmail={copiedEmail}
       setCopiedEmail={setCopiedEmail}
       handleCopy={handleCopy}
       handleCopyAll={handleCopyAll}
-      showBrevo={false}
     />
   );
 };

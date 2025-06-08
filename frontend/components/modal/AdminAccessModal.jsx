@@ -7,8 +7,8 @@ import {
   updateUserAdminStatus,
   getAllUsers,
   getAllSubscribers,
-  getActiveSubscribers,
-  getExpiredSubscribers,
+  fetchActiveSubscribers,
+  fetchExpiredSubscribers,
 } from "@/redux/slices/usersSlice";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -18,6 +18,8 @@ const AdminAccessModal = ({ user, onClose, page }) => {
   const dispatch = useDispatch();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
+
+  console.log("modal", user)
 
   const handleConfirm = async () => {
     setLoading(true);
@@ -36,9 +38,9 @@ const AdminAccessModal = ({ user, onClose, page }) => {
       } else if(pathname === "/admin/users/all") {
         dispatch(getAllUsers(page));
       } else if(pathname === "/admin/users/active"){
-        dispatch(getActiveSubscribers(page))
+        dispatch(fetchActiveSubscribers(page))
       } else if(pathname === "/admin/users/expired"){
-        dispatch(getExpiredSubscribers(page))
+        dispatch(fetchExpiredSubscribers(page))
       }
       
       onClose();

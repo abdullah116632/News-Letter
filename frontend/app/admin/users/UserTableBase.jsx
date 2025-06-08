@@ -17,6 +17,8 @@ import {
   getExpiredSubscribers,
 } from "@/redux/slices/usersSlice";
 import { usePathname } from "next/navigation";
+import { Link } from "lucide-react";
+import ActiveSubscriberNav from "./active/ActiveSubscriberNav";
 
 const UserTableBase = ({
   users,
@@ -24,14 +26,13 @@ const UserTableBase = ({
   setPage,
   heading,
   copiedEmail,
-  showBrevo,
-  showExpiresDate,
   handleCopyAll,
   handleCopy,
+  showPackage,
+  showActiveSubscriberPage,
 }) => {
   const dispatch = useDispatch();
-  const pathname = usePathname();
-
+  
 
   // const handleAddToBrevo = async (user) => {
   //   try {
@@ -67,6 +68,9 @@ const UserTableBase = ({
     <div className="overflow-x-auto bg-gray-950 rounded-b-2xl text-white p-6 shadow-lg">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-red-400">{heading}</h2>
+        {showActiveSubscriberPage && (
+          <ActiveSubscriberNav />
+        )}
         <button
           onClick={handleCopyAll}
           className="text-sm bg-emerald-400 hover:bg-gray-700 px-4 py-2 rounded-lg border border-white/10 cursor-pointer"
@@ -83,9 +87,9 @@ const UserTableBase = ({
             <th className="p-4 border-b border-white/10">Full Name</th>
             <th className="p-4 border-b border-white/10 relative">Email</th>
             <th className="p-4 border-b border-white/10">Is Admin</th>
-            {/* {showBrevo && (
-              <th className="p-4 border-b border-white/10">Brevo</th>
-            )} */}
+            {showPackage && (
+              <th className="p-4 border-b border-white/10">Package</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -147,35 +151,16 @@ const UserTableBase = ({
                     />
                   )}
                 </td>
-                {/* {showBrevo && (
+                {showPackage && (
                   <td className="p-4 border-b border-white/10">
-                    {user?.isSubscribed ? (
-                      user?.isAdded ? (
-                        <FaMinusCircle
-                          className="text-red-500 text-lg cursor-pointer hover:opacity-80"
-                          title="Remove from Brevo"
-                          onClick={() => handleRemoveFromBrevo(user)}
-                        />
-                      ) : (
-                        <FaPlusCircle
-                          className="text-green-400 text-lg cursor-pointer hover:opacity-80"
-                          title="Add to Brevo"
-                          onClick={() => handleAddToBrevo(user)}
-                        />
-                      )
-                    ) : (
-                      <FaTimesCircle
-                        className="text-gray-400 text-lg"
-                        title="Not Subscribed"
-                      />
-                    )}
+                    {user?.planTitle}
                   </td>
-                )} */}
+                )}
               </tr>
             ))
           ) : (
             <td
-              colSpan={6 + (showBrevo ? 1 : 0)}
+              colSpan={6 + (showPackage ? 1 : 0)}
               className="text-center p-6 text-gray-400"
             >
               No users found.

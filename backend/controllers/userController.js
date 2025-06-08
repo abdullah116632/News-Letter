@@ -117,14 +117,16 @@ export const updateProfile = async (req, res, next) => {
 export const updateSkills = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const {skills} = req.body;
+    const { skills } = req.body;
 
     if (!Array.isArray(skills)) {
       return res.status(400).json({ message: "Skills must be an array" });
     }
 
     if (skills.length > 20) {
-      return res.status(400).json({ message: "You can add up to 20 skills only" });
+      return res
+        .status(400)
+        .json({ message: "You can add up to 20 skills only" });
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -149,246 +151,39 @@ export const updateSkills = async (req, res, next) => {
   }
 };
 
-export const getAllUser = async (req, res, next) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 15;
-    const skip = (page - 1) * limit;
-
-    const totalUsers = await User.countDocuments();
-    const totalPages = Math.ceil(totalUsers / limit);
-
-    if (page > totalPages && totalUsers > 0) {
-      return next(
-        new CustomError(
-          404,
-          `Page ${page} does not exist. Only ${totalPages} page(s) available.`
-        )
-      );
-    }
-
-    const users = await User.find({})
-      .select("img fullName email isSubscribed isAdmin isAdded")
-      .skip(skip)
-      .limit(limit);
-
-    if (users.length === 0 && totalUsers === 0) {
-      return next(new CustomError(404, "No users found in the database."));
-    }
-
-    res.status(200).json({
-      success: true,
-      currentPage: page,
-      totalPages,
-      totalUsers,
-      data: {
-        users,
-      },
-    });
-  } catch (err) {
-    console.log(err);
-    next(err);
-  }
-};
-
-export const getAllSubscribedUsers = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 15;
-    const skip = (page - 1) * limit;
-
-    const aggregatePipeline = [
-      { $sort: { createdAt: -1 } },
-      {
-        $group: {
-          _id: "$user",
-          latestSubscription: { $first: "$$ROOT" },
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "_id",
-          as: "userInfo",
-        },
-      },
-      { $unwind: "$userInfo" },
-      {
-        $project: {
-          _id: 0,
-          user: {
-            _id: "$userInfo._id",
-            fullName: "$userInfo.fullName",
-            email: "$userInfo.email",
-            img: "$userInfo.img",
-            isAdmin: "$userInfo.isAdmin",
-          },
-        },
-      },
-      { $skip: skip },
-      { $limit: limit },
-    ];
-
-    const result = await Subscription.aggregate(aggregatePipeline);
-    const total = await Subscription.distinct("user");
-    const totalPages = Math.ceil(total.length / limit);
-
-    const usersOnly = result.map(item => item.user);
-
-    res.status(200).json({
-      success: true,
-      currentPage: page,
-      totalPages,
-      totalSubscribers: total.length,
-      data: { users: usersOnly },
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-
-export const getActiveSubscribers = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 15;
-    const skip = (page - 1) * limit;
-
-    const aggregatePipeline = [
-      { $match: { status: "active" } },
-      { $sort: { createdAt: -1 } },
-      {
-        $group: {
-          _id: "$user",
-          latestSubscription: { $first: "$$ROOT" },
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "_id",
-          as: "userInfo",
-        },
-      },
-      { $unwind: "$userInfo" },
-      {
-        $project: {
-          _id: 0,
-          user: {
-            _id: "$userInfo._id",
-            fullName: "$userInfo.fullName",
-            email: "$userInfo.email",
-            img: "$userInfo.img",
-            isAdmin: "$userInfo.isAdmin",
-          },
-        },
-      },
-      { $skip: skip },
-      { $limit: limit },
-    ];
-
-    const result = await Subscription.aggregate(aggregatePipeline);
-    const total = await Subscription.distinct("user", { status: "active" });
-    const totalPages = Math.ceil(total.length / limit);
-
-    const usersOnly = result.map(item => item.user);
-
-    res.status(200).json({
-      success: true,
-      currentPage: page,
-      totalPages,
-      totalSubscribers: total.length,
-      data: { users: usersOnly },
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-
-export const getExpiredSubscribers = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 15;
-    const skip = (page - 1) * limit;
-
-    const aggregatePipeline = [
-      { $match: { status: "expired" } },
-      { $sort: { createdAt: -1 } },
-      {
-        $group: {
-          _id: "$user",
-          latestSubscription: { $first: "$$ROOT" },
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "_id",
-          as: "userInfo",
-        },
-      },
-      { $unwind: "$userInfo" },
-      {
-        $project: {
-          _id: 0,
-          user: {
-            _id: "$userInfo._id",
-            fullName: "$userInfo.fullName",
-            email: "$userInfo.email",
-            img: "$userInfo.img",
-            isAdmin: "$userInfo.isAdmin",
-          },
-        },
-      },
-      { $skip: skip },
-      { $limit: limit },
-    ];
-
-    const result = await Subscription.aggregate(aggregatePipeline);
-    const total = await Subscription.distinct("user", { status: "expired" });
-    const totalPages = Math.ceil(total.length / limit);
-
-    const usersOnly = result.map(item => item.user);
-
-    res.status(200).json({
-      success: true,
-      currentPage: page,
-      totalPages,
-      totalSubscribers: total.length,
-      data: { users: usersOnly },
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-
 export const updateAdminAccess = async (req, res, next) => {
   try {
     const { userId } = req.params;
+    console.log(req.params);
+
+    if (!userId || userId == "undefined") {
+      console.log("working");
+      return next(new CustomError(404, "params is missing"));
+    }
 
     // Prevent self-admin status change
     if (req.user._id.toString() === userId) {
-      return res
-        .status(403)
-        .json({ message: "You cannot change your own admin access" });
+      return next(
+        new CustomError(403, "You cannot change your own admin access")
+      );
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!user) {
+      return next(new CustomError(404, "User not found"));
+    }
 
     // Prevent removing admin from the last admin
     if (user.isAdmin) {
       const adminCount = await User.countDocuments({ isAdmin: true });
       if (adminCount === 1) {
-        return res.status(400).json({
-          message:
-            "At least one admin must exist. You cannot remove admin access from the last admin.",
-        });
+        return next(
+          new CustomError(
+            400,
+            "At least one admin must exist. You cannot remove admin access from the last admin."
+          )
+        );
       }
     }
 
@@ -408,4 +203,277 @@ export const updateAdminAccess = async (req, res, next) => {
     console.error("Error updating admin access:", error);
     next(error);
   }
+};
+
+export const getAllUser = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+
+    const totalUsers = await User.countDocuments();
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    if (page > totalPages && totalUsers > 0) {
+      return next(
+        new CustomError(
+          404,
+          `Page ${page} does not exist. Only ${totalPages} page(s) available.`
+        )
+      );
+    }
+
+    const users = await User.find({})
+      .select("img fullName email isAdmin")
+      .skip(skip)
+      .limit(limit);
+
+    if (users.length === 0 && totalUsers === 0) {
+      return next(new CustomError(404, "No users found in the database."));
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        currentPage: page,
+        totalPages,
+        totalUsers,
+        users,
+      },
+    });
+  } catch (err) {
+    console.log("error happend", err);
+    next(err);
+  }
+};
+
+export const getAllSubscribers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+
+    const pipeline = [
+      { $match: { paid: true } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$user",
+          latestSubscription: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "serviceplans",
+          localField: "latestSubscription.servicePlan",
+          foreignField: "_id",
+          as: "plan",
+        },
+      },
+      { $unwind: "$plan" },
+      {
+        $project: {
+          _id: "$user._id",
+          img: "$user.img",
+          fullName: "$user.fullName",
+          email: "$user.email",
+          isAdmin: "$user.isAdmin",
+          planTitle: "$plan.title",
+        },
+      },
+    ];
+
+    const result = await Subscription.aggregate(pipeline);
+    const paginated = result.slice(skip, skip + limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        total: result.length,
+        currentPage: page,
+        totalPages: Math.ceil(result.length / limit),
+        users: paginated,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getAllActiveSubscribers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+
+    const activeSubs = await Subscription.find({ status: "active", paid: true })
+      .populate("user", "img fullName email isAdmin")
+      .populate("servicePlan", "title");
+
+    const uniqueUsers = new Map();
+    for (const sub of activeSubs) {
+      if (!sub.user) {
+        return res.status(400).json({
+          success: false,
+          message: "One or more subscriptions have missing user information.",
+        });
+      }
+      const userId = sub.user._id.toString();
+      if (!uniqueUsers.has(userId)) {
+        uniqueUsers.set(userId, {
+          _id: sub.user._id,
+          img: sub.user.img,
+          fullName: sub.user.fullName,
+          email: sub.user.email,
+          isAdmin: sub.user.isAdmin,
+          planTitle: sub.servicePlan.title,
+        });
+      }
+    }
+
+    const data = Array.from(uniqueUsers.values());
+    const paginated = data.slice(skip, skip + limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        total: data.length,
+        currentPage: page,
+        totalPages: Math.ceil(data.length / limit),
+        users: paginated,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getScholarTrackSubscribers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const result = await getActiveSubscribersByPlanTitle("ScholarTrack.", page);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getCareerCatchSubscribers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const result = await getActiveSubscribersByPlanTitle("CareerCatch.", page);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getOptAllAccessSubscribers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const result = await getActiveSubscribersByPlanTitle(
+      "OpT. All-Access",
+      page
+    );
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getAllExpiredSubscribers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 15;
+    const skip = (page - 1) * limit;
+
+    const expiredSubs = await Subscription.find({
+      status: "expired",
+      paid: true,
+    })
+      .populate("user", "img fullName email isAdmin")
+      .populate("servicePlan", "title");
+
+    const uniqueUsers = new Map();
+    for (const sub of expiredSubs) {
+      if (!sub.user) {
+        return res.status(400).json({
+          success: false,
+          message: "One or more subscriptions have missing user information.",
+        });
+      }
+      const userId = sub.user._id.toString();
+      if (!uniqueUsers.has(userId)) {
+        uniqueUsers.set(userId, {
+          _id: sub.user._id,
+          img: sub.user.img,
+          fullName: sub.user.fullName,
+          email: sub.user.email,
+          isAdmin: sub.user.isAdmin,
+          planTitle: sub.servicePlan.title,
+        });
+      }
+    }
+
+    const data = Array.from(uniqueUsers.values());
+    const paginated = data.slice(skip, skip + limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        total: data.length,
+        currentPage: page,
+        totalPages: Math.ceil(data.length / limit),
+        users: paginated,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getActiveSubscribersByPlanTitle = async (planTitle, page = 1) => {
+  const limit = 15;
+  const skip = (page - 1) * limit;
+
+  const activeSubs = await Subscription.find({ status: "active", paid: true })
+    .populate("user", "img fullName email isAdmin")
+    .populate("servicePlan", "title");
+
+  const filtered = activeSubs.filter(
+    (s) => s.servicePlan?.title === planTitle && s.user
+  );
+
+  const uniqueUsersMap = new Map();
+  for (const sub of filtered) {
+    if (!uniqueUsersMap.has(sub.user._id.toString())) {
+      uniqueUsersMap.set(sub.user._id.toString(), {
+        _id: sub.user._id,
+        img: sub.user.img,
+        fullName: sub.user.fullName,
+        email: sub.user.email,
+        isAdmin: sub.user.isAdmin,
+        planTitle: sub.servicePlan.title,
+      });
+    }
+  }
+
+  const allUsers = Array.from(uniqueUsersMap.values());
+  const paginated = allUsers.slice(skip, skip + limit);
+
+  return {
+    total: allUsers.length,
+    currentPage: page,
+    totalPages: Math.ceil(allUsers.length / limit),
+    users: paginated,
+  };
 };

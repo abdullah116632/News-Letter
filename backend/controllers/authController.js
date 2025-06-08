@@ -6,7 +6,13 @@ import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import compareString from "../utils/conpareString.js";
 import Otp from "../models/otpModel.js";
 import sendEmail from "../utils/sendMail.js";
-import { createOtpMailHtmlForForgetPassword, createSignupMailHtml, createVerifyEmailHtml } from "../utils/mailHtml.js";
+import {
+  createOtpMailHtmlForForgetPassword,
+  createSignupMailHtml,
+  createVerifyEmailHtml,
+} from "../utils/mailHtml.js";
+import Subscription from "../models/subscriptionModel.js";
+import Review from "../models/reviewModel.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -69,8 +75,8 @@ export const signup = async (req, res, next) => {
       expiresAt,
     });
 
-    const mailHtml = createVerifyEmailHtml({fullName, otp})
-    const mailSubject = "Your email verification otp"
+    const mailHtml = createVerifyEmailHtml({ fullName, otp });
+    const mailSubject = "Your email verification otp";
 
     await sendEmail(email, mailSubject, mailHtml);
 
@@ -122,7 +128,7 @@ export const verifyUser = async (req, res, next) => {
     // Set JWT token
     generateTokenAndSetToken(user._id, res);
 
-    const mailHtml = createSignupMailHtml({fullName: user.fullName})
+    const mailHtml = createSignupMailHtml({ fullName: user.fullName });
     const mailSubject = "Welcome to Our Opt.national!";
 
     await sendEmail(email, mailSubject, mailHtml);
@@ -260,7 +266,7 @@ export const forgotPassword = async (req, res, next) => {
 
     await Otp.create({ email, otp, expiresAt });
 
-    const mailHtml = createOtpMailHtmlForForgetPassword({fullName, otp})
+    const mailHtml = createOtpMailHtmlForForgetPassword({ fullName, otp });
     const mailSubject = "Your Password Reset OTP";
 
     await sendEmail(email, mailSubject, mailHtml);
@@ -350,24 +356,32 @@ export const resetPassword = async (req, res, next) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res, next) => {
   const userId = req.user._id;
   const { password } = req.body;
 
   if (!password) {
-    return res.status(400).json({ message: "Password is required" });
+    return next(new CustomError(400, "Password is required"));
   }
 
   try {
     const user = await User.findById(userId).select("+password");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return next(new CustomError(404, "User not found"))
+    }
 
     const isMatch = await compareString(password, user.password);
-    if (!isMatch)
-      return res.status(401).json({ message: "Incorrect password" });
-
+    if (!isMatch){
+      return next(new CustomError(401, "Incorrect password"))
+    }
     // Delete user
     await User.findByIdAndDelete(userId);
+
+    // Delete user's reviews
+    await Review.deleteMany({ user: userId });
+
+    // Delete user's subscriptions
+    await Subscription.deleteMany({ user: userId });
 
     // Clear login cookie (logout)
     res.cookie("jwt", "", {
@@ -379,7 +393,7 @@ export const deleteUser = async (req, res) => {
 
     return res.status(200).json({
       status: "success",
-      message: "User deleted and logged out successfully",
+      message: "User, reviews, and subscriptions deleted successfully",
       data: null,
     });
   } catch (error) {

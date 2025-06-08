@@ -7,7 +7,7 @@ import { FaUserCheck, FaUserTimes } from "react-icons/fa";
 const UserList = ({ children }) => {
   const pathname = usePathname();
 
-  const isActive = (path) => pathname === path;
+  const isActive = (path) => pathname.startsWith(path);
 
   return (
     <div>

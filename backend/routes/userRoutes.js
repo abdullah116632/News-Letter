@@ -1,17 +1,45 @@
 import express from "express";
 import protectRoute from "../middleware/protectRoute.js";
-import { getActiveSubscribers, getAllUser, getExpiredSubscribers, getMe, getAllSubscribedUsers, getUserByEmail, updateAdminAccess, updateProfile, updateSkills } from "../controllers/userController.js";
+import {
+  getAllActiveSubscribers,
+  getAllUser,
+  getAllExpiredSubscribers,
+  getMe,
+  getAllSubscribers,
+  getUserByEmail,
+  updateAdminAccess,
+  updateProfile,
+  updateSkills,
+  getScholarTrackSubscribers,
+  getCareerCatchSubscribers,
+  getOptAllAccessSubscribers,
+} from "../controllers/userController.js";
 import { upload } from "../middleware/fileUpload.js";
 import adminProtect from "../middleware/adminProtect.js";
 
 const router = express.Router();
 
-router.get("/", protectRoute, getMe)
-router.get("/:email", protectRoute, getUserByEmail)
+router.get("/", protectRoute, getMe);
+router.get("/:email", protectRoute, getUserByEmail);
 router.get("/all/all", adminProtect, getAllUser);
-router.get("/subscribed/all", adminProtect, getAllSubscribedUsers);
-router.get("/subscribed/active", adminProtect, getActiveSubscribers);
-router.get("/subscribed/expired", adminProtect, getExpiredSubscribers);
+router.get("/subscribed/all", adminProtect, getAllSubscribers);
+router.get("/subscribed/active", adminProtect, getAllActiveSubscribers);
+router.get(
+  "/subscribed/active/scholar-track.",
+  adminProtect,
+  getScholarTrackSubscribers
+);
+router.get(
+  "/subscribed/active/career-catch",
+  adminProtect,
+  getCareerCatchSubscribers
+);
+router.get(
+  "/subscribed/active/all-access",
+  adminProtect,
+  getOptAllAccessSubscribers
+);
+router.get("/subscribed/expired", adminProtect, getAllExpiredSubscribers);
 router.patch("/", protectRoute, upload.single("img"), updateProfile);
 router.put("/update-skills", protectRoute, updateSkills);
 router.put("/admin-access/:userId", adminProtect, updateAdminAccess);

@@ -32,28 +32,62 @@ export const getAllSubscribers = createAsyncThunk(
   }
 );
 
-export const getActiveSubscribers = createAsyncThunk(
-  "user/getSubscribedUsers",
-  async (page, thunkAPI) => {
+export const fetchActiveSubscribers = createAsyncThunk(
+  "subscribers/fetchActive",
+  async (page = 1, thunkAPI) => {
     try {
-      const response = await api.get(`/user/subscribed/active?page=${page}`);
-      return response.data.data.users;
+      const res = await api.get(`/user/subscribed/active?page=${page}`);
+      return res.data.data.users;
     } catch (error) {
-      const message = error.response?.data?.message || error.message || "Failed to fetch active subscriber";
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch active subscribers");
     }
   }
 );
 
-export const getExpiredSubscribers = createAsyncThunk(
-  "user/getSubscribedUsers",
-  async (page, thunkAPI) => {
+export const fetchScholarTrackSubscribers = createAsyncThunk(
+  "subscribers/fetchScholarTrack",
+  async (page = 1, thunkAPI) => {
     try {
-      const response = await api.get(`/user/subscribed/expired?page=${page}`);
-      return response.data.data.users;
+      const res = await api.get(`/user/subscribed/active/scholar-track.?page=${page}`);
+      return res.data.data.users;
     } catch (error) {
-      const message = error.response?.data?.message || error.message || "Failed to fetch expires subscriber";
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch ScholarTrack subscribers");
+    }
+  }
+);
+
+export const fetchCareerCatchSubscribers = createAsyncThunk(
+  "subscribers/fetchCareerCatch",
+  async (page = 1, thunkAPI) => {
+    try {
+      const res = await api.get(`/user/subscribed/active/career-catch?page=${page}`);
+      return res.data.data.users;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch CareerCatch subscribers");
+    }
+  }
+);
+
+export const fetchAllAccessSubscribers = createAsyncThunk(
+  "subscribers/fetchAllAccess",
+  async (page = 1, thunkAPI) => {
+    try {
+      const res = await api.get(`/user/subscribed/active/all-access?page=${page}`);
+      return res.data.data.users;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch All-Access subscribers");
+    }
+  }
+);
+
+export const fetchExpiredSubscribers = createAsyncThunk(
+  "subscribers/fetchExpired",
+  async (page = 1, thunkAPI) => {
+    try {
+      const res = await api.get(`/user/subscribed/expired?page=${page}`);
+      return res.data.data.users;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch expired subscribers");
     }
   }
 );
@@ -65,7 +99,7 @@ export const updateUserAdminStatus = createAsyncThunk(
       const response = await api.put(`/user/admin-access/${userId}`, {}, {
         headers: {"Content-Type": "application/json"}
       });
-      return response.data.data;
+      return response.data.data.users;
     } catch (error) {
       const message = error.response?.data?.message || error.message || "Failed to update admin status";
       return thunkAPI.rejectWithValue(message);
@@ -116,6 +150,74 @@ const usersSlice = createSlice({
         state.error = action.payload;
       })
 
+       .addCase(fetchActiveSubscribers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchActiveSubscribers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(fetchActiveSubscribers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Handle fetchScholarTrackSubscribers
+      .addCase(fetchScholarTrackSubscribers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchScholarTrackSubscribers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(fetchScholarTrackSubscribers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Handle fetchCareerCatchSubscribers
+      .addCase(fetchCareerCatchSubscribers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCareerCatchSubscribers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(fetchCareerCatchSubscribers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Handle fetchAllAccessSubscribers
+      .addCase(fetchAllAccessSubscribers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllAccessSubscribers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(fetchAllAccessSubscribers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Handle fetchExpiredSubscribers
+      .addCase(fetchExpiredSubscribers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExpiredSubscribers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(fetchExpiredSubscribers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

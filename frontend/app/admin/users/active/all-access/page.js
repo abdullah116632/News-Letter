@@ -1,17 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import UserTableBase from "../UserTableBase";
-import { getAllUsers } from "@/redux/slices/usersSlice";
+import { fetchAllAccessSubscribers } from "@/redux/slices/usersSlice";
+import UserTableBase from "../../UserTableBase";
 
-const AllUserTable = () => {
+const AllAccessSubscriberTable = () => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [copiedEmail, setCopiedEmail] = useState(null);
   const { users, loading, error } = useSelector((state) => state.usersData);
 
   useEffect(() => {
-    dispatch(getAllUsers(page));
+    dispatch(fetchAllAccessSubscribers(page));
   }, [dispatch, page]);
 
   const handleCopy = (email) => {
@@ -35,14 +35,15 @@ const AllUserTable = () => {
       users={users}
       page={page}
       setPage={setPage}
-      heading="All Users"
+      heading="Active Subscribers"
       copiedEmail={copiedEmail}
       setCopiedEmail={setCopiedEmail}
       handleCopy={handleCopy}
       handleCopyAll={handleCopyAll}
-      showPackage={false}
+      showPackage={true}
+      showActiveSubscriberPage={true}
     />
   );
 };
 
-export default AllUserTable;
+export default AllAccessSubscriberTable;
