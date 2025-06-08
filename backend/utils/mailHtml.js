@@ -92,3 +92,25 @@ export const createUpdateSubscriptionMailHtml = (data) => {
       </body>
     </html>`;
 };
+
+
+export const createReminderEmailHtml = (data) => {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+      <h2 style="color: #333;">Hello ${data.fullName},</h2>
+      <p style="font-size: 16px; color: #555;">
+        This is a friendly reminder that your <strong>${data.planTitle}</strong> subscription is set to expire on <strong>${endDate}</strong>.
+      </p>
+      <p style="font-size: 16px; color: #555;">
+        To avoid any interruption in service, we recommend renewing your subscription before the expiration date.
+      </p>
+      <p style="font-size: 14px; color: #999;">
+        If you've already renewed, please ignore this message.
+      </p>
+      <hr style="margin: 30px 0;">
+      <p style="font-size: 12px; color: #aaa;">
+        Thank you for being a valued member of our platform.
+      </p>
+    </div>
+  `;
+};

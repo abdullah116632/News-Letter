@@ -19,8 +19,6 @@ const AdminAccessModal = ({ user, onClose, page }) => {
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
 
-  console.log("modal", user)
-
   const handleConfirm = async () => {
     setLoading(true);
     try {

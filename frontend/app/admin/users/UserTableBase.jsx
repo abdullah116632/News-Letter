@@ -51,15 +51,22 @@ const UserTableBase = ({
 
   return (
     <div className="overflow-x-auto bg-gray-950 rounded-b-2xl text-white p-6 shadow-lg">
-      <div className="flex items-center justify-between mb-6 ">
-        <h2 className="text-sm lg:text-2xl font-bold text-red-400">{heading}</h2>
+      <div className="flex items-center justify-between mb-6 flex-wrap lg:flex-nowrap gap-2 overflow-x-auto">
+        <h2 className="text-sm lg:text-2xl font-bold text-red-400 whitespace-nowrap">
+          {heading}
+        </h2>
+
         {showActiveSubscriberPage && <ActiveSubscriberNav />}
+
         {copiedEmail === "all" && (
-          <span className="text-green-400 text-sm font-semibold">Copied!</span>
+          <span className="text-green-400 text-sm font-semibold whitespace-nowrap">
+            Copied!
+          </span>
         )}
+
         <button
           onClick={handleCopyAll}
-          className="text-sm bg-emerald-400 hover:bg-gray-700 ml-1 lg:px-4 py-2 rounded-lg border border-white/10 cursor-pointer"
+          className="text-sm bg-emerald-400 hover:bg-gray-700 ml-1 lg:px-4 py-2 rounded-lg border border-white/10 cursor-pointer whitespace-nowrap px-2"
         >
           Copy All Emails
         </button>
@@ -95,7 +102,7 @@ const UserTableBase = ({
                   {user?.fullName}
                 </td>
                 <td className="relative p-4 border-b border-white/10 flex items-center justify-between gap-2">
-                  <span className="truncate max-w-[160px] p-4">
+                  <span className="truncate max-w-[180px] p-4">
                     {user?.email}
                   </span>
                   <button

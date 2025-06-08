@@ -194,10 +194,13 @@ export const updateAdminAccess = async (req, res, next) => {
     );
 
     res.status(200).json({
-      message: `Admin access ${
-        updatedUser.isAdmin ? "granted" : "removed"
-      } successfully.`,
-      user: updatedUser,
+      success: true,
+      data: {
+        message: `Admin access ${
+          updatedUser.isAdmin ? "granted" : "removed"
+        } successfully.`,
+        user: updatedUser,
+      },
     });
   } catch (error) {
     console.error("Error updating admin access:", error);
@@ -327,7 +330,6 @@ export const getAllActiveSubscribers = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-
     const uniqueUsers = new Map();
     for (const sub of activeSubs) {
       if (!sub.user) {
@@ -453,15 +455,15 @@ const getActiveSubscribersByPlanTitle = async (planTitle, page = 1) => {
 
   const today = new Date();
 
-    const activeSubs = await Subscription.find({
-      startingDate: { $lte: today },
-      endingDate: { $gte: today },
-      paid: true,
-    })
-      .populate("user", "img fullName email isAdmin")
-      .populate("servicePlan", "title")
-      .skip(skip)
-      .limit(limit);
+  const activeSubs = await Subscription.find({
+    startingDate: { $lte: today },
+    endingDate: { $gte: today },
+    paid: true,
+  })
+    .populate("user", "img fullName email isAdmin")
+    .populate("servicePlan", "title")
+    .skip(skip)
+    .limit(limit);
 
   const filtered = activeSubs.filter(
     (s) => s.servicePlan?.title === planTitle && s.user

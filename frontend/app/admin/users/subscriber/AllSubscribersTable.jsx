@@ -10,8 +10,6 @@ const AllSubscibersTable = () => {
   const [copiedEmail, setCopiedEmail] = useState(null);
   const { users, loading, error } = useSelector((state) => state.usersData);
 
-  console.log("subs",users);
-
   useEffect(() => {
     dispatch(getAllSubscribers(page));
   }, [dispatch, page]);

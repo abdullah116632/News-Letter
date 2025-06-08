@@ -33,8 +33,12 @@ export const signup = async (req, res, next) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      const err = new CustomError(400, "User already exist");
-      return next(err);
+      if (!existingUser.isVerified) {
+        await User.deleteOne({ _id: existingUser._id });
+      } else {
+        const err = new CustomError(400, "User already exist");
+        return next(err);
+      }
     }
 
     if (password !== confirmPassword) {
@@ -367,12 +371,12 @@ export const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(userId).select("+password");
     if (!user) {
-      return next(new CustomError(404, "User not found"))
+      return next(new CustomError(404, "User not found"));
     }
 
     const isMatch = await compareString(password, user.password);
-    if (!isMatch){
-      return next(new CustomError(401, "Incorrect password"))
+    if (!isMatch) {
+      return next(new CustomError(401, "Incorrect password"));
     }
     // Delete user
     await User.findByIdAndDelete(userId);

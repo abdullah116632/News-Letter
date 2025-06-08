@@ -99,7 +99,7 @@ export const updateUserAdminStatus = createAsyncThunk(
       const response = await api.put(`/user/admin-access/${userId}`, {}, {
         headers: {"Content-Type": "application/json"}
       });
-      return response.data.data.users;
+      return response.data.data.user;
     } catch (error) {
       const message = error.response?.data?.message || error.message || "Failed to update admin status";
       return thunkAPI.rejectWithValue(message);
