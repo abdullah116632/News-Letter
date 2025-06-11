@@ -16,7 +16,7 @@ const BlogCard = ({ _id, img, title, description }) => {
       </div>
 
       {/* Title */}
-      <h6 className="text-xl md:text-2xl lg:text-3xl font-roboto font-semibold px-2 py-3 h-[3.5em] md:h-[2em] overflow-hidden text-center">
+      <h6 className="text-xl md:text-2xl lg:text-3xl font-roboto font-semibold px-2 py-3 h-[3.5em] md:h-[2.9em] overflow-y-scroll hide-scrollbar text-center">
         {title}
       </h6>
 

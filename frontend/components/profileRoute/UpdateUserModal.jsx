@@ -98,7 +98,8 @@ const UpdateUserModal = ({ onClose }) => {
       toast.success("Profile updated successfully!");
       onClose();
     } catch (err) {
-      toast.error(err?.message || "Update failed");
+      console.log(err)
+      toast.error(err || "Update failed");
     }
   };
 
@@ -267,7 +268,7 @@ const UpdateUserModal = ({ onClose }) => {
               type="submit"
               className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 cursor-pointer"
             >
-              {loading ? "Updationg..." : "Update"}
+              {loading ? "Updating..." : "Update"}
             </button>
             
           </div>

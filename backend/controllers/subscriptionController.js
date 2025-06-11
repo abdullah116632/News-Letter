@@ -282,18 +282,18 @@ export const handleCancel = async (req, res) => {
       return res.status(400).send("Missing subscription metadata.");
     }
 
-    const subscriptionId = metadata.subscription_id;
+    // const subscriptionId = metadata.subscription_id;
 
-    // Find the subscription using subscriptionId from metadata
-    const subscription = await Subscription.findOne({ subscriptionId });
+    // // Find the subscription using subscriptionId from metadata
+    // const subscription = await Subscription.findOne({ subscriptionId });
 
-    if (!subscription) {
-      return res.status(404).send("Subscription not found.");
-    }
+    // if (!subscription) {
+    //   return res.status(404).send("Subscription not found.");
+    // }
 
-    // Update status to 'Failed' or 'Canceled'
-    subscription.status = "Failed";
-    await subscription.save();
+    // // Update status to 'Failed' or 'Canceled'
+    // subscription.status = "Failed";
+    // await subscription.save();
 
     // Redirect user to cancel page or notify cancellation
     res.redirect(`${process.env.FRONTEND_URL}/payment/cancel`);

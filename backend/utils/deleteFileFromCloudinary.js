@@ -1,4 +1,5 @@
 import cloudinary from "../db/cloudinaryConnection.js";
+import CustomError from "./customErrorClass.js";
 
 
 const deleteImageFromCloudinary = async (imageUrl) => {
@@ -14,12 +15,13 @@ const deleteImageFromCloudinary = async (imageUrl) => {
     );
 
     if (result !== "ok") {
-      throw new Error(
-        "image was not deleted successfully from cloudnary. Please try again"
+      throw new CustomError(
+        400,
+        "Image was not deleted successfully from Cloudinary. Please try again."
       );
     }
   } catch (error) {
-    throw new Error(error);
+    throw new CustomError(500, error.message || "Image deletion failed");
   }
 };
 
@@ -36,12 +38,13 @@ const deleteUserImageFromCloudinary = async (imageUrl) => {
     );
 
     if (result !== "ok") {
-      throw new Error(
-        "image was not deleted successfully from cloudnary. Please try again"
+      throw new CustomError(
+        400,
+        "Image was not deleted successfully from Cloudinary. Please try again."
       );
     }
   } catch (error) {
-    throw new Error(error);
+    throw new CustomError(500, error.message || "Image deletion failed");
   }
 };
 
