@@ -1,7 +1,8 @@
 import Subscription from "../models/subscriptionModel.js";
 import User from "../models/userModel.js";
 import CustomError from "../utils/customErrorClass.js";
-import { deleteImageFromCloudinary } from "../utils/deleteFileFromCloudinary.js";
+import { deleteUserImageFromCloudinary } from "../utils/deleteFileFromCloudinary.js";
+import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
 export const getMe = async (req, res, next) => {
   try {
@@ -61,7 +62,7 @@ export const updateProfile = async (req, res, next) => {
 
     let imgUrl;
     if (req.file) {
-      await deleteImageFromCloudinary(req.user.img);
+      await deleteUserImageFromCloudinary(req.user.img);
       const response = await uploadToCloudinary(
         req.file.buffer,
         "newsLater/user-profilePic"

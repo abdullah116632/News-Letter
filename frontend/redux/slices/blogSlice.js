@@ -1,4 +1,3 @@
-
 import api from '@/lib/client-axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
@@ -7,7 +6,6 @@ export const createBlog = createAsyncThunk("blog/createBlog", async (data, thunk
     const response = await api.post("/blog/", data, {
       headers: { "Content-Type": "multipart/form-data" },
     })
-    console.log(response.data.data);
     return response.data.data.blogs;
   }catch(err){
     const message =

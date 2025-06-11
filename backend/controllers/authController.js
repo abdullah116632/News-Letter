@@ -13,6 +13,7 @@ import {
 } from "../utils/mailHtml.js";
 import Subscription from "../models/subscriptionModel.js";
 import Review from "../models/reviewModel.js";
+import { deleteUserImageFromCloudinary } from "../utils/deleteFileFromCloudinary.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -379,6 +380,7 @@ export const deleteUser = async (req, res, next) => {
       return next(new CustomError(401, "Incorrect password"));
     }
     // Delete user
+    await deleteUserImageFromCloudinary(user.img);
     await User.findByIdAndDelete(userId);
 
     // Delete user's reviews

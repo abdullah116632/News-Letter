@@ -11,7 +11,7 @@ const listMap = {
 };
 
 // Run every day at 00:00
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("0 */6 * * *", async () => {
   console.log("Running daily subscription check...");
 
   const today = new Date();
@@ -96,7 +96,13 @@ cron.schedule("0 0 * * *", async () => {
   console.log("Running subscription reminder email cron...");
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const day = today.getDate();
+
+  // Only run on every 3rd day
+  if (day % 3 !== 0) {
+    console.log("Skipping reminder job today (not a 3rd-day interval)");
+    return;
+  }
 
   const threeDaysFromNow = new Date();
   threeDaysFromNow.setDate(today.getDate() + 3);

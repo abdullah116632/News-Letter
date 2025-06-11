@@ -121,6 +121,8 @@ export const deleteBlog = async (req, res, next) => {
       return next(new CustomError(404, "Blog not found"));
     }
 
+    console.log(blog.img)
+
     await deleteImageFromCloudinary(blog.img);
 
     // Delete blog from DB

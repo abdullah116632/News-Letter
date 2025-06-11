@@ -7,7 +7,7 @@ import { updateUserProfile } from "@/redux/slices/authSlice";
 
 const UpdateUserModal = ({ onClose }) => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.authData);
+  const { user, loading } = useSelector((state) => state.authData);
   const fileInputRef = useRef();
 
   const [formData, setFormData] = useState({
@@ -255,13 +255,21 @@ const UpdateUserModal = ({ onClose }) => {
             <option value="false">No</option>
           </select>
 
-          <div className="col-span-full flex justify-end mt-2">
+          <div className="col-span-full flex gap-3 justify-end mt-2">
+            <button
+              onClick={()=> onClose()}
+              type="button"
+              className="bg-purple-200 text-black px-6 py-2 rounded-md hover:bg-purple-300 cursor-pointer"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
-              className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700"
+              className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 cursor-pointer"
             >
-              Update
+              {loading ? "Updationg..." : "Update"}
             </button>
+            
           </div>
         </form>
       </div>

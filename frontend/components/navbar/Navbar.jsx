@@ -14,15 +14,17 @@ const Navbar = () => {
       <div className="mt-5 h-16">
         <div className="flex m-auto w-full md:w-[90%] h-7">
           {/* logo */}
-          <Link href="/" className="flex-grow z-10">
-            <Image
-              src="/images/navLogo.png"
-              alt="nav-image"
-              height={200}
-              width={120}
-              className="relative top-[-1.5rem] md:top-[-1rem] cursor-pointer"
-            />
-          </Link>
+          <div className="flex-grow z-10">
+            <Link href="/">
+              <Image
+                src="/images/navLogo.png"
+                alt="nav-image"
+                height={200}
+                width={120}
+                className="relative top-[-1.5rem] md:top-[-1rem] cursor-pointer"
+              />
+            </Link>
+          </div>
 
           {/* navlink */}
           <div className="flex">

@@ -8,6 +8,7 @@ import {
 import { SlSocialPintarest } from "react-icons/sl";
 import SubscribeButton from "./SubscribeButton";
 import Image from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -107,10 +108,10 @@ const Footer = () => {
             OPT. National — All rights reserved
           </li>
           <li className="order-1 md:order-2 hover:text-white transition-colors cursor-pointer">
-            Terms and conditions applied
+            <Link href="/terms-and-conditions" >Terms and conditions applied</Link>
           </li>
           <li className="order-1 md:order-2 hover:text-white transition-colors cursor-pointer">
-            Privacy Policy
+            <Link href="/privacy-policy" >Privacy Policy</Link>
           </li>
           <li className="order-1 md:order-2 hover:text-white transition-colors cursor-pointer">
             Contact: contact@optnational.com
