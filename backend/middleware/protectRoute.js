@@ -1,27 +1,33 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
-
+import CustomError from "../utils/customErrorClass.js";
 
 const protectRoute = async (req, res, next) => {
-        const token = req.cookies.jwt;
-        if(!token){
-            return res.status(401).json({error: "Unothorized , no token provided"});
-        }
+  const token = req.cookies.jwt;
+  if (!token) {
+    return next(new CustomError(401, "You are not logged in"));
+  }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        if(!decoded){
-            return res.status(401).json({error: "unothorized , invalid token"});
-        }
+  if (!decoded) {
+    return next(new CustomError(401, "unothorized , invalid token"));
+  }
 
-        const user = await User.findById(decoded.userId).select("+password");
+  const user = await User.findById(decoded.userId).select("+password");
 
-        if(!user){
-            return res.status(404).json({error: "User not found"});
-        }
+  if (!user) {
+    return next(new CustomError(404, "User not found"));
+  }
 
-        req.user = user;
-        next();
-}
+  if (!user.isVerified) {
+    return next(
+      new CustomError(403, "Account not verified. Please verify your email.")
+    );
+  }
+
+  req.user = user;
+  next();
+};
 
 export default protectRoute;

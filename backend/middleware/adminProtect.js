@@ -12,8 +12,8 @@ const adminProtect = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     if (!decoded) {
-      return res.status(401).json({ error: "unothorized , invalid token" });
-    }
+    return next(new CustomError(401, "unothorized , invalid token"));
+  }
 
     const user = await User.findById(decoded.userId);
 
@@ -21,11 +21,17 @@ const adminProtect = async (req, res, next) => {
       return next(new CustomError(404, "User not found"));
     }
 
+    if (!user.isVerified) {
+      return next(
+        new CustomError(403, "Account not verified. Please verify your email.")
+      );
+    }
+
     if (!user.isAdmin) {
       return next(new CustomError(403, "Access denied. Admins only."));
     }
 
-    req.user = user; // attach user info to request
+    req.user = user;
     next();
   } catch (err) {
     next(err);
