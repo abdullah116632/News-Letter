@@ -7,10 +7,10 @@ import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 // Create a new blog
 export const createBlog = async (req, res, next) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, body } = req.body;
 
-    if (!title || !description) {
-      return next(new CustomError(400, "title and description are required"));
+    if (!title || !description || !body) {
+      return next(new CustomError(400, "title, description and body are required"));
     }
 
     if (!req.file) {
@@ -23,6 +23,7 @@ export const createBlog = async (req, res, next) => {
     const blog = await Blog.create({
       title,
       description,
+      body,
       img: result.secure_url,
     });
 
@@ -89,10 +90,11 @@ export const updateBlog = async (req, res, next) => {
       return next(new CustomError(404, "Blog not found"));
     }
 
-    const { title, description } = req.body;
+    const { title, description, body } = req.body;
 
     if (title !== undefined) blog.title = title;
     if (description !== undefined) blog.description = description;
+    if (body !== undefined) blog.body = body;
 
     if (req.file) {
       // Upload new image to Cloudinary
@@ -131,6 +133,29 @@ export const deleteBlog = async (req, res, next) => {
     res.status(204).json({
       status: "success",
       data: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Get latest blogs excluding specific blog ID
+export const getLatestBlogsExcludingId = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const limit = parseInt(req.query.limit) || 5;
+
+    // Find latest blogs excluding the specified ID
+    const blogs = await Blog.find({ _id: { $ne: id } })
+      .sort({ createdAt: -1 })
+      .limit(limit);
+
+    res.status(200).json({
+      status: "success",
+      results: blogs.length,
+      data: {
+        blogs,
+      },
     });
   } catch (err) {
     next(err);

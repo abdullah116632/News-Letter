@@ -3,16 +3,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerAxios } from "@/lib/server-axios";
+import LatestBlogs from "@/components/LatestBlogs";
+import 'ckeditor5/ckeditor5.css';
+import '@/app/ck.css';
 
 const BlogDetails = async ({ params }) => {
   const { id } = await params;
   const axios = await getServerAxios();
 
   let blog = null;
+  let latestBlogs = null;
 
   try {
+    // Fetch current blog
     const response = await axios.get(`/blog/${id}`);
     blog = response.data.data.blog;
+
+    // Fetch latest 5 blogs excluding current blog (efficient server-side filtering)
+    const latestBlogsResponse = await axios.get(`/blog/${id}/latest?limit=5`);
+    latestBlogs = latestBlogsResponse.data.data.blogs;
   } catch (err) {
     console.error("Error fetching blog:", err);
     notFound();
@@ -26,7 +35,7 @@ const BlogDetails = async ({ params }) => {
       <div className="mb-8">
         <Link
           href="/blogs"
-          className="inline-block bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition"
+          className="inline-block bg-linear-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition"
         >
           ← Back
         </Link>
@@ -34,29 +43,29 @@ const BlogDetails = async ({ params }) => {
 
       {/* Image Section */}
       <div className="w-full flex flex-col lg:flex-row">
-        <div className="w-full lg:w-1/2">
+        <div className="w-full">
           <Image
             src={blog?.img || "/images/default-blog.jpg"}
             alt={blog?.title}
-            width={800}
+            width={1200}
             height={500}
-            className="rounded-xl shadow-xl object-cover w-full max-h-[600px]"
+            className="rounded-xl object-cover w-full aspect-4/1"
           />
         </div>
-        <div className="hidden lg:block lg:w-1/2" />
       </div>
 
       {/* Title */}
-      <h1 className="mt-10 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-roboto bg-gradient-to-r from-[#FF00FB] via-[#9B00FF] to-[#00D9FF] bg-clip-text text-transparent">
+      <h1 className="mt-10 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-roboto bg-linear-to-r from-[#FF00FB] via-[#9B00FF] to-[#00D9FF] bg-clip-text text-transparent">
         {blog?.title}
       </h1>
 
       {/* Description */}
-      <div className="mt-6">
-        <p className="text-base sm:text-lg md:text-xl text-gray-200 leading-relaxed font-roboto">
-          {blog?.description}
-        </p>
+      <div className="mt-6 ck-content">
+        <div className="prose lg:prose-xl !max-w-none prose-invert" dangerouslySetInnerHTML={{ __html: blog?.body }} />
       </div>
+
+      {/* Latest Blogs Section */}
+      <LatestBlogs blogs={latestBlogs} />
     </div>
   );
 };
